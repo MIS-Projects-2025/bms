@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthMiddleware
 {
@@ -74,7 +75,8 @@ class AuthMiddleware
             session()->forget('emp_data');
             // Clear this system's own cookie only
             $expiredCookie = cookie()->forget($cookieName);
-            return $this->redirectToLogin($request)->withCookie($expiredCookie);
+            Cookie::queue(Cookie::forget('sso_token'));
+            return $this->redirectToLogin($request);
         }
 
         $isFromAllowed = $currentUser->emp_from === null;
@@ -171,6 +173,6 @@ class AuthMiddleware
     private function redirectToLogin(Request $request)
     {
         $redirectUrl = urlencode($request->fullUrl());
-        return redirect("http://192.168.2.221:8200/login?redirect={$redirectUrl}");
+        return Inertia::location("http://192.168.2.221:8200/login?redirect={$redirectUrl}");
     }
 }
