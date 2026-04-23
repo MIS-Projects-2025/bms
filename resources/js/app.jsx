@@ -5,10 +5,8 @@ import "./bootstrap";
 import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
-import { ConfigProvider, theme as antdTheme } from "antd";
 import { ThemeProvider, ThemeContext } from "../js/Components/ThemeContext";
-
-import { Toaster } from "sonner"; // ✅ ADD THIS
+import { Toaster } from "sonner";
 
 const rawAppName = import.meta.env.VITE_APP_NAME || "Laravel";
 const appName = rawAppName
@@ -43,25 +41,12 @@ createInertiaApp({
                     <ThemeContext.Consumer>
                         {({ theme }) => (
                             <>
-                                {/* ✅ Sonner Toaster */}
                                 <Toaster
                                     richColors
                                     position="top-center"
-                                    theme={theme} // auto dark/light sync
+                                    theme={theme}
                                 />
-
-                                <ConfigProvider
-                                    theme={{
-                                        algorithm:
-                                            theme === "dark"
-                                                ? antdTheme.darkAlgorithm
-                                                : antdTheme.defaultAlgorithm,
-                                    }}
-                                >
-                                    <div style={{ position: "relative" }}>
-                                        <App {...props} />
-                                    </div>
-                                </ConfigProvider>
+                                <App {...props} />
                             </>
                         )}
                     </ThemeContext.Consumer>

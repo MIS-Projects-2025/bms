@@ -20,7 +20,8 @@ class AuthMiddleware
     {
         // Internal service-to-service calls (e.g. Authify fetching employee data
         // during login) carry X-Internal-Key and must bypass SSO entirely.
-        if ($request->header('X-Internal-Key') === config('services.internal.key')) {
+        $internalKey = config('services.internal.key');
+        if ($internalKey && $request->header('X-Internal-Key') === $internalKey) {
             return $next($request);
         }
 
@@ -116,6 +117,8 @@ class AuthMiddleware
             'emp_prodline_id'  => $currentUser->emp_prodline_id,
             'emp_position_id'  => $currentUser->emp_position_id,
             'emp_station_id'   => $currentUser->emp_station_id,
+            'shift_type'       => $currentUser->shift_type ?? null,
+            'team'             => $currentUser->team ?? null,
 
             'generated_at'   => $currentUser->generated_at,
         ]]);

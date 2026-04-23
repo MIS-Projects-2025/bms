@@ -1,8 +1,6 @@
 import { usePage } from "@inertiajs/react";
 import SidebarLink from "@/Components/sidebar/SidebarLink";
-
-import { ClipboardList, FileText, Table2, Box, Layers } from "lucide-react";
-import Dropdown from "./DropDown";
+import { LayoutDashboard } from "lucide-react";
 
 export default function NavLinks({ isSidebarOpen }) {
     const { emp_data } = usePage().props;
@@ -11,6 +9,13 @@ export default function NavLinks({ isSidebarOpen }) {
         <nav
             className="flex flex-col flex-grow space-y-1 overflow-y-auto"
             style={{ scrollbarWidth: "none" }}
-        ></nav>
+        >
+            <SidebarLink
+                href={route("dashboard")}
+                label="Dashboard"
+                icon={<LayoutDashboard className="w-5 h-5" />}
+                isSidebarOpen={isSidebarOpen}
+            />
+        </nav>
     );
 }
