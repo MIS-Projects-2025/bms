@@ -98,6 +98,10 @@ class AuthMiddleware
 
         Log::info('User roles fetched', ['emp_id' => $userId]);
 
+        $isAdmin = DB::connection('mysql')->table('admin')
+            ->where('emp_id', $currentUser->emp_id)
+            ->first();
+
         // 🔹 Set session
         session(['emp_data' => [
             'token'         => $currentUser->token,
@@ -110,6 +114,7 @@ class AuthMiddleware
             'emp_station'   => $currentUser->emp_station,
             'emp_position'  => $currentUser->emp_position,
             'generated_at'  => $currentUser->generated_at,
+            'emp_system_role' => $isAdmin->emp_role ?? null,
         ]]);
 
         session()->save();
