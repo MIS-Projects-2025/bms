@@ -41,7 +41,7 @@ export default function NavBar() {
     const isDark = theme === "dark";
 
     return (
-        <nav className="sticky top-0 z-50 bg-background/70 backdrop-blur-md border-b border-border/40 shadow-sm">
+        <nav className="sticky top-0 z-50 bg-background/70 backdrop-blur-md">
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-end h-[54px] gap-2">
                     {/* ── Theme Toggle Pill ── */}
@@ -52,7 +52,7 @@ export default function NavBar() {
                             "relative flex items-center gap-1 px-1 py-1 rounded-full border transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                             isDark
                                 ? "bg-zinc-800/80 border-zinc-700/60 hover:bg-zinc-700/80"
-                                : "bg-amber-50/80 border-amber-200/70 hover:bg-amber-100/80",
+                                : "bg-indigo-50/80 border-indigo-200/70 hover:bg-indigo-100/80",
                         )}
                     >
                         {/* Sliding indicator */}
@@ -60,8 +60,8 @@ export default function NavBar() {
                             className={cn(
                                 "absolute top-1 w-6 h-6 rounded-full shadow-md transition-all duration-300 ease-in-out",
                                 isDark
-                                    ? "left-1 bg-gradient-to-br from-indigo-500 to-violet-600 shadow-indigo-900/50"
-                                    : "left-[calc(100%-1.75rem)] bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-400/40",
+                                    ? "left-1 bg-gradient-to-br from-indigo-500 to-blue-600 shadow-indigo-900/50"
+                                    : "left-[calc(100%-1.75rem)] bg-gradient-to-br from-indigo-400 to-blue-500 shadow-indigo-400/40",
                             )}
                         />
 
@@ -72,17 +72,17 @@ export default function NavBar() {
                                 isDark ? "text-zinc-500" : "text-white",
                             )}
                         >
-                            <Sun className="w-3.5 h-3.5" />
+                            <Sun className="w-3.5 h-3.5 text-indigo-400" />
                         </span>
 
                         {/* Moon icon */}
                         <span
                             className={cn(
                                 "relative z-10 flex items-center justify-center w-6 h-6 transition-all duration-300",
-                                isDark ? "text-white" : "text-amber-300/60",
+                                isDark ? "text-white" : "text-indigo-300/60",
                             )}
                         >
-                            <Moon className="w-3.5 h-3.5" />
+                            <Moon className="w-3.5 h-3.5 text-indigo-400" />
                         </span>
                     </button>
 
@@ -102,8 +102,8 @@ export default function NavBar() {
                                             className={cn(
                                                 "text-xs font-bold",
                                                 isDark
-                                                    ? "bg-gradient-to-br from-indigo-500 to-violet-600 text-white"
-                                                    : "bg-gradient-to-br from-amber-400 to-orange-500 text-white",
+                                                    ? "bg-gradient-to-br from-indigo-500 to-blue-600 text-white"
+                                                    : "bg-gradient-to-br from-indigo-400 to-blue-500 text-white",
                                             )}
                                         >
                                             {getInitials(firstName)}
@@ -135,8 +135,8 @@ export default function NavBar() {
                                         className={cn(
                                             "text-sm font-bold",
                                             isDark
-                                                ? "bg-gradient-to-br from-indigo-500 to-violet-600 text-white"
-                                                : "bg-gradient-to-br from-amber-400 to-orange-500 text-white",
+                                                ? "bg-gradient-to-br from-indigo-500 to-blue-600 text-white"
+                                                : "bg-gradient-to-br from-indigo-400 to-blue-500 text-white",
                                         )}
                                     >
                                         {getInitials(firstName)}

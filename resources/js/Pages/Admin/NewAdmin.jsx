@@ -33,7 +33,7 @@ export default function NewAdmin({ tableData, tableFilters, emp_data }) {
             <Head title="Manage Administrators" />
 
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold text-gray-500 hover:text-gray-600">
+                <h1 className="text-2xl font-bold text-blue-700 hover:text-blue-800">
                     <i className="fa-solid fa-users-between-lines"></i> Employee List
                 </h1>
             </div>
@@ -70,7 +70,7 @@ export default function NewAdmin({ tableData, tableFilters, emp_data }) {
                         <div className="space-y-4">
                             {/* Employee Info */}
                             <div className="text-center">
-                                <div className="text-4xl text-teal-500 mb-2">
+                                <div className="text-4xl text-blue-600 mb-2">
                                     <i className="fa-solid fa-id-card"></i>
                                 </div>
                                 <h2 className="text-xl font-bold text-gray-800 dark:text-gray-600">
@@ -102,13 +102,13 @@ export default function NewAdmin({ tableData, tableFilters, emp_data }) {
                                 </label>
                                 <select
                                     onChange={(e) => setRole(e.target.value)}
-                                    className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-100 dark:text-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-teal-6000 text-sm p-2"
+                                    className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-100 dark:text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-6000 text-sm p-2"
                                 >
                                     <option value="">-- Select Role --</option>
-                                    {emp_data?.emp_role === "superadmin" && (
+                                    {emp_data?.emp_system_role === "superadmin" && (
                                         <option value="superadmin">Superadmin</option>
                                     )}
-                                    {["superadmin", "admin"].includes(emp_data?.emp_role) && (
+                                    {["superadmin", "admin"].includes(emp_data?.emp_system_role) && (
                                                 <option value="admin">Admin</option>
                                             )}
                                 </select>
@@ -119,7 +119,7 @@ export default function NewAdmin({ tableData, tableFilters, emp_data }) {
                                 <div className="flex justify-end pt-4 border-t border-gray-400 dark:border-gray-700">
                                     <button
                                         onClick={() => addAdmin(row.EMPLOYID, row.EMPNAME, row.JOB_TITLE)} // ✅ Ipinapasa na ang JOB_TITLE
-                                        className="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-medium transition-all duration-200"
+                                        className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium transition-all duration-200"
                                     >
                                         <i className="fa-solid fa-user-plus me-1"></i> Add as {role}
                                     </button>

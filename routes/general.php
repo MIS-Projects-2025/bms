@@ -22,6 +22,7 @@ Route::prefix($app_name)->middleware(AuthMiddleware::class)->group(function () {
   });
 
   Route::get("/", [DashboardController::class, 'index'])->name('dashboard');
+
   Route::get("/profile", [ProfileController::class, 'index'])->name('profile.index');
   Route::post("/change-password", [ProfileController::class, 'changePassword'])->name('changePassword');
 });

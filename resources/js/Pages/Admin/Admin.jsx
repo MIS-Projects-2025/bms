@@ -52,7 +52,7 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
             <Head title="Manage Admin" />
 
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold text-red-800 hover:text-red-900">
+                <h1 className="text-2xl font-bold text-blue-800 hover:text-blue-900">
                     <i className="fa-solid fa-users"></i> Administrator`s
                 </h1>
 
@@ -89,7 +89,7 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                 {(row, close) => (
                     <Modal
                         id="RowModal"
-                        icon="<i className='fa-solid fa-users-gear mr-2 text-red-600'></i>"
+                        icon="<i className='fa-solid fa-users-gear mr-2 text-blue-600'></i>"
                         title="Employee Details"
                         show={true}
                         onClose={() => tableModalClose(close)}
@@ -98,7 +98,7 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                         <div className="space-y-4">
                             {/* User Info */}
                             <div className="text-center">
-                                <div className="text-4xl text-red-800 mb-2">
+                                <div className="text-4xl text-blue-800 mb-2">
                                     <i className="fa-solid fa-user-circle"></i>
                                 </div>
                                 <h2 className="text-xl font-bold text-gray-800 dark:text-gray-800">
@@ -109,7 +109,7 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                                 </p>
                                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-800">
                                     Current Role:{" "}
-                                    <span className="font-semibold text-red-800 dark:text-red-600">
+                                    <span className="font-semibold text-blue-800 dark:text-blue-600">
                                         {row.emp_role}
                                     </span>
                                 </p>
@@ -151,7 +151,7 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
 
             <button
                 onClick={() => removeAdmin(row.emp_id)}
-                className="px-4 py-2 bg-red-600 text-white rounded"
+                className="px-4 py-2 bg-blue-600 text-white rounded"
             >
                <i className="fa-solid fa-trash"></i> Remove
             </button>

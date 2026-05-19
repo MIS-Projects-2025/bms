@@ -151,7 +151,7 @@ export default function Sidebar() {
                     {/* ── Logo ── */}
                     <div
                         className={cn(
-                            "flex items-center h-14 shadow-lg",
+                            "flex items-center h-14",
                             isSidebarOpen ? "px-4" : "px-0 justify-center",
                         )}
                     >
@@ -175,10 +175,10 @@ export default function Sidebar() {
                                         {formattedAppName}
                                     </span>
                                     <span
-                                        className="text-[7px] font-medium tracking-widest uppercase
+                                        className="text-[9px] font-medium tracking-widest uppercase mt-1 font-bold dark:text-muted-foreground
                                         text-primary/70"
                                     >
-                                        VOUCHER APPROVAL SYSTEM
+                                        BAKE MONITORING SYSTEM
                                     </span>
                                 </div>
                             )}

@@ -30,8 +30,8 @@ export default function DataTable({
 
     const themeColor =
         localStorage.getItem("theme") === "dark"
-            ? "hover:bg-red-800"
-            : "hover:bg-red-50";
+            ? "hover:bg-blue-800"
+            : "hover:bg-blue-50";
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -151,7 +151,7 @@ export default function DataTable({
                     <button
                         key={page}
                         className={`join-item btn btn-sm ${
-                            page === current ? "bg-red-800 text-white" : ""
+                            page === current ? "bg-blue-800 text-white" : ""
                         }`}
                         onClick={() => {
                             const pageLink = meta.links.find(
@@ -177,7 +177,7 @@ export default function DataTable({
     };
 
     return (
-        <div className="w-full p-3 border border-red-800 rounded-lg">
+        <div className="w-full p-3 border border-blue-800 rounded-lg">
             <form
                 onSubmit={dateRangeSearch ? handleDateFilter : handleSearch}
                 className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
@@ -193,10 +193,10 @@ export default function DataTable({
                             { preserveState: true }
                         );
                     }}
-                    className="select select-sm w-[100px] py-0 border-red-800 "
+                    className="select select-sm w-[100px] py-0 border-blue-800 "
                 >
-                    {[10, 25, 50, 100].map((num) => (
-                        <option key={num} value={num} className="hover:bg-red-800">
+                    {[10, 25, 50, 100, 500, 10000].map((num) => (
+                        <option key={num} value={num} className="hover:bg-blue-800">
                             Show {num}
                         </option>
                     ))}
@@ -268,11 +268,11 @@ export default function DataTable({
                             placeholder="Search..."
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            className="w-full input input-sm sm:w-auto bg-red-50 input-bordered"
+                            className="w-full input input-sm sm:w-auto bg-blue-50 input-bordered"
                         />
                         <button
                             type="submit"
-                            className="px-2 btn btn-sm bg-red-800 text-white btn-outline"
+                            className="px-2 btn btn-sm bg-blue-800 text-white btn-outline"
                         >
                             <Search className="w-4 h-4" />
                         </button>
@@ -381,7 +381,7 @@ export default function DataTable({
 
             {meta?.links?.length > 0 && (
                 <div className="flex flex-col gap-2 mt-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="text-sm text-red-700">
+                    <div className="text-sm text-blue-700">
                         Showing {meta.from} to {meta.to} of {meta.total} results
                     </div>
                     {renderPaginationLinks()}

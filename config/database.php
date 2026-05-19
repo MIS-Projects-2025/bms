@@ -62,6 +62,46 @@ return [
             ]) : [],
         ],
 
+        'server25' => [
+            'driver' => 'mysql',
+            'url' => env('MCDB_URL'),
+            'host' => env('MCDB_HOST', '127.0.0.1'),
+            'port' => env('MCDB_PORT', '3306'),
+            'database' => env('MCDB_DATABASE', 'laravel'),
+            'username' => env('MCDB_USERNAME', 'root'),
+            'password' => env('MCDB_PASSWORD', ''),
+            'unix_socket' => env('MCDB_SOCKET', ''),
+            'charset' => env('MCDB_CHARSET', 'utf8mb4'),
+            'collation' => env('MCDB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'ppc' => [
+            'driver' => 'mysql',
+            'url' => env('PPCDB_URL'),
+            'host' => env('PPCDB_HOST', '127.0.0.1'),
+            'port' => env('PPCDB_PORT', '3306'),
+            'database' => env('PPCDB_DATABASE', 'laravel'),
+            'username' => env('PPCDB_USERNAME', 'root'),
+            'password' => env('PPCDB_PASSWORD', ''),
+            'unix_socket' => env('PPCDB_SOCKET', ''),
+            'charset' => env('PPCDB_CHARSET', 'utf8mb4'),
+            'collation' => env('PPCDB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'masterlist' => [
             'driver' => 'mysql',
             'url' => env('ADB_URL'),

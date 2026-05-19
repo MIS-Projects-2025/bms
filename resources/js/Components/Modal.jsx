@@ -41,7 +41,7 @@ export default function Modal({
                 className={`w-full ${sizeClasses[size]} bg-white rounded-2xl shadow-2xl overflow-hidden animate-fadeIn`}
             >
                 {/* HEADER */}
-                <div className="flex items-center justify-between px-5 py-4 border-b bg-gradient-to-r from-red-700 to-red-800">
+                <div className="flex items-center justify-between px-5 py-4 border-b bg-gradient-to-r from-blue-700 to-blue-800">
                     <h2 className="text-lg font-semibold text-white">
                         {title}
                     </h2>
