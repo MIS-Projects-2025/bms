@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { router } from "@inertiajs/react";
-import { Search } from 'lucide-react';
+import { Search } from "lucide-react";
 
 export default function DataTable({
     columns,
@@ -21,7 +21,7 @@ export default function DataTable({
     const [searchInput, setSearchInput] = useState(filters.search || "");
     const [perPage, setPerPage] = useState(filters.perPage || 10);
     const [dropdownValue, setDropdownValue] = useState(
-        filters?.[filterDropdown?.key] || ""
+        filters?.[filterDropdown?.key] || "",
     );
 
     const extractDate = (dt) => (dt ? dt.split(" ")[0] : "");
@@ -46,7 +46,7 @@ export default function DataTable({
         router.get(
             routeName,
             { ...filters, search: searchInput, ...extraFilter },
-            { preserveState: true }
+            { preserveState: true },
         );
     };
 
@@ -63,7 +63,7 @@ export default function DataTable({
                 end: formattedTo,
                 search: undefined,
             },
-            { preserveState: true }
+            { preserveState: true },
         );
     };
 
@@ -113,7 +113,7 @@ export default function DataTable({
         router.get(
             routeName,
             { ...filters, sortBy: key, sortDirection: newDirection },
-            { preserveState: true }
+            { preserveState: true },
         );
     };
 
@@ -142,7 +142,7 @@ export default function DataTable({
                     disabled={current <= 1}
                     onClick={() =>
                         router.visit(
-                            meta.links.find((l) => l.label === "&laquo;")?.url
+                            meta.links.find((l) => l.label === "&laquo;")?.url,
                         )
                     }
                     dangerouslySetInnerHTML={{ __html: "&laquo;" }}
@@ -155,7 +155,7 @@ export default function DataTable({
                         }`}
                         onClick={() => {
                             const pageLink = meta.links.find(
-                                (l) => parseInt(l.label) === page
+                                (l) => parseInt(l.label) === page,
                             );
                             if (pageLink?.url) router.visit(pageLink.url);
                         }}
@@ -167,7 +167,7 @@ export default function DataTable({
                     disabled={current >= last}
                     onClick={() =>
                         router.visit(
-                            meta.links.find((l) => l.label === "&raquo;")?.url
+                            meta.links.find((l) => l.label === "&raquo;")?.url,
                         )
                     }
                     dangerouslySetInnerHTML={{ __html: "&raquo;" }}
@@ -190,13 +190,17 @@ export default function DataTable({
                         router.get(
                             routeName,
                             { ...filters, perPage: value },
-                            { preserveState: true }
+                            { preserveState: true },
                         );
                     }}
                     className="select select-sm w-[100px] py-0 border-blue-800 "
                 >
                     {[10, 25, 50, 100, 500, 10000].map((num) => (
-                        <option key={num} value={num} className="hover:bg-blue-800">
+                        <option
+                            key={num}
+                            value={num}
+                            className="hover:bg-blue-800"
+                        >
                             Show {num}
                         </option>
                     ))}
@@ -251,7 +255,7 @@ export default function DataTable({
                                             dropdownFields:
                                                 filterDropdown.fields.join(","),
                                         },
-                                        { preserveState: true }
+                                        { preserveState: true },
                                     );
                                 }}
                             >
@@ -268,7 +272,7 @@ export default function DataTable({
                             placeholder="Search..."
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            className="w-full input input-sm sm:w-auto bg-blue-50 input-bordered"
+                            className="w-full input input-sm sm:w-auto bg-blue-50 input-bordered text-stone-700"
                         />
                         <button
                             type="submit"
@@ -340,7 +344,7 @@ export default function DataTable({
                             data.map((row, index) => {
                                 const key = `${row[rowKey]}-${index}`;
                                 const isSelected = selected.some(
-                                    (r) => r[rowKey] === row[rowKey]
+                                    (r) => r[rowKey] === row[rowKey],
                                 );
                                 return (
                                     <tr
