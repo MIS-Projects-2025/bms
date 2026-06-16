@@ -16,65 +16,71 @@ export default function NavLinks({ isSidebarOpen }) {
         <nav className="flex flex-col gap-0.5">
             <SidebarLink
                 href={route("dashboard")}
-                icon={<LayoutDashboard  className="w-[18px] h-[18px]" />}
+                icon={<LayoutDashboard className="w-[18px] h-[18px]" />}
                 label="Dashboard"
                 isSidebarOpen={isSidebarOpen}
             />
-            
             {isAllowed && (
-            <div>
-            <SidebarLink
-                href={route("oven.index")}
-                icon={<SquareStack   className="w-5 h-5" />}
-                label="Oven Status"
-                isSidebarOpen={isSidebarOpen}
-            />
-            <SidebarLink
-                href={route("dry-bake.index")}
-                icon={<FileSpreadsheet  className="w-5 h-5"/>}
-                label="Dry Bake Form"
-                isSidebarOpen={isSidebarOpen}
-            />
-            </div>
+                <div>
+                    <SidebarLink
+                        href={route("oven.index")}
+                        icon={<SquareStack className="w-5 h-5" />}
+                        label="Oven Status"
+                        isSidebarOpen={isSidebarOpen}
+                    />
+                    <SidebarLink
+                        href={route("dry-bake.index")}
+                        icon={<FileSpreadsheet className="w-5 h-5" />}
+                        label="Dry Bake Form"
+                        isSidebarOpen={isSidebarOpen}
+                    />
+                </div>
             )}
-             <SidebarLink
+            <SidebarLink
                 href={route("forms.index")}
-                icon={<ListTree  className="w-5 h-5"/>}
+                icon={<ListTree className="w-5 h-5" />}
                 label="Dry Bake List"
                 isSidebarOpen={isSidebarOpen}
             />
-             {/* <SidebarLink
+            {/* <SidebarLink
                 href={route("package.history.index")}
                 icon={<FileClock  className="w-5 h-5"/>}
                 label="Package History"
                 isSidebarOpen={isSidebarOpen}
             /> */}
+
+            <SidebarLink
+                href={route("temperature.index")}
+                icon={<FileClock  className="w-5 h-5"/>}
+                label="Smartdac Temp"
+                isSidebarOpen={isSidebarOpen}
+            />
             {isAdmin && (
                 <div>
-            <Dropdown
-                icon={<Settings  className="w-5 h-5"/>}
-                label="Maintenance"
-                isSidebarOpen={isSidebarOpen}
-                links={[
-                    {
-                        href: route("package.history.index"),
-                        label: "Package History",
-                    },
-                    {
-                        href: route("partnames.index"),
-                        label: "Partname List",
-                    },
-                    {
-                        href: route("ovenlist.index"),
-                        label: "Oven Machine",
-                    },
-                    {
-                        href: route("admin"),
-                        label: "Administrators",
-                    },
-                ]}
-            />
-           
+                    <Dropdown
+                        icon={<Settings className="w-5 h-5" />}
+                        label="Maintenance"
+                        isSidebarOpen={isSidebarOpen}
+                        links={[
+                            {
+                                href: route("package.history.index"),
+                                label: "Package History",
+                            },
+                            {
+                                href: route("partnames.index"),
+                                label: "Partname List",
+                            },
+                            {
+                                href: route("ovenlist.index"),
+                                label: "Oven Machine",
+                            },
+                            {
+                                href: route("admin"),
+                                label: "Administrators",
+                            },
+                        ]}
+                    />
+
                     {/* <SidebarLink
                         href={route("partnames.index")}
                         label="Partname List"
@@ -97,9 +103,6 @@ export default function NavLinks({ isSidebarOpen }) {
                     /> */}
                 </div>
             )}
-
         </nav>
-
-
     );
 }

@@ -28,28 +28,30 @@ export default function Bakeforms({
 };
 
 useEffect(() => {
-    const interval = setInterval(() => {
-        router.reload({
-            only: ["tableData"],
-            preserveState: true,
-            preserveScroll: true,
-        });
-    }, 5000);
+    if (!selectedOven || !isModalOpen) return;
 
-    return () => clearInterval(interval);
-}, []);
+    const oven = chamberPerOvenName.find(
+        (item) => item.oven_name === selectedOven,
+    );
 
-useEffect(() => {
-    const interval = setInterval(() => {
-        router.reload({
-            only: ["bakePackageDetails"], // or tableData if needed
-            preserveState: true,
-            preserveScroll: true,
-        });
-    }, 5000); // every 5 second
+    let chambers = [];
 
-    return () => clearInterval(interval);
-}, []);
+    if (oven?.chamber) {
+        chambers = JSON.parse(oven.chamber);
+    }
+
+    const filtered = bakePackageDetails.filter(
+        (item) =>
+            item.oven_num === selectedOven && item.bake_status !== "complete",
+    );
+
+    const chamberMap = chambers.reduce((acc, chamber) => {
+        acc[chamber] = filtered.filter((item) => item.chamber === chamber);
+        return acc;
+    }, {});
+
+    setGroupedData(chamberMap);
+}, [bakePackageDetails, selectedOven, isModalOpen]);
 
     // 🔄 realtime update
     useEffect(() => {
@@ -290,7 +292,7 @@ useEffect(() => {
     groupedData={groupedData}
     setGroupedData={setGroupedData}
     getChamberStatus={getChamberStatus}
-    bakePackageDetails={bakePackageDetails} 
+    bakePackageDetails={bakePackageDetails}
 />
 
         </AuthenticatedLayout>

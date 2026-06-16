@@ -30,4 +30,7 @@ Route::prefix($app_name)->middleware(AuthMiddleware::class)->group(function () {
   Route::put('/bake/complete/{id}', [OvenListStatusController::class, 'markComplete'])->name('bake.complete');
 
   Route::put('/bake/{id}/cooldown', [OvenListController::class, 'startCooldown'])->name('bake.cooldown');
+
+  // routes/web.php
+  Route::put('/bake/{id}/extend', [OvenListController::class, 'extendTime'])->name('bake.extend');
 });

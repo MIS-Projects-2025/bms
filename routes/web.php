@@ -22,6 +22,11 @@ require __DIR__ . '/logsheetforms.php';
 // Package lot routes
 require __DIR__ . '/packagelots.php';
 
+// Temp API
+require __DIR__ . '/api.php';
+
+
+
 Route::get("/dashboard/data", [DashboardController::class, 'data']);
 
 
