@@ -49,12 +49,6 @@ export default function NavLinks({ isSidebarOpen }) {
                 isSidebarOpen={isSidebarOpen}
             /> */}
 
-            <SidebarLink
-                href={route("temperature.index")}
-                icon={<FileClock  className="w-5 h-5"/>}
-                label="Smartdac Temp"
-                isSidebarOpen={isSidebarOpen}
-            />
             {isAdmin && (
                 <div>
                     <Dropdown
@@ -101,6 +95,12 @@ export default function NavLinks({ isSidebarOpen }) {
                         icon={<Users className="w-5 h-5" />}
                         isSidebarOpen={isSidebarOpen}
                     /> */}
+                    <SidebarLink
+                        href={route("temperature.index")}
+                        icon={<FileClock className="w-5 h-5" />}
+                        label="Smartdac Temp"
+                        isSidebarOpen={isSidebarOpen}
+                    />
                 </div>
             )}
         </nav>
