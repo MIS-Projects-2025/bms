@@ -153,39 +153,45 @@ class OvenListController extends Controller
         return back();
     }
 
-    public function extendTime(Request $request, $id)
+public function extendTime(Request $request, $id)
 {
     $request->validate([
-        'add_seconds' => 'required|integer|min=1',
+        'add_seconds' => ['required', 'integer', 'min:1'],
     ]);
 
     $record = DB::table('dbakeformtable')->where('id', $id)->first();
 
-    // Only extend if the bake is still active (not completed/interrupted)
-    if (!in_array($record->bake_status, ['inuse', 'ongoing', 'active'])) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Bake record is not active.',
-        ], 422);
+    if (!$record) {
+        return redirect()->back()->with('error', 'Record not found.');
     }
 
-    $addSeconds = (int) $request->add_seconds;
+    if (!in_array($record->bake_status, ['inuse', 'ongoing', 'active'])) {
+        return redirect()->back()->with('error', 'Bake record is not active.');
+    }
 
-    // Save old date_time_out before modifying (for audit trail)
-    $record->old_date_time_out = $record->date_time_out;
+    $addSeconds     = (int) $request->add_seconds;
+    $oldDateTimeOut = $record->date_time_out;
 
-    // Add elapsed drop time to date_time_out
-    $record->date_time_out = \Carbon\Carbon::parse($record->date_time_out)
+    $newDateTimeOut = \Carbon\Carbon::parse($oldDateTimeOut)
         ->addSeconds($addSeconds);
 
-    $record->save();
-
-    return response()->json([
-        'success'          => true,
-        'message'          => "Extended date_time_out by {$addSeconds} seconds due to temperature drop.",
-        'added_seconds'    => $addSeconds,
-        'old_date_time_out'=> $record->old_date_time_out,
-        'new_date_time_out'=> $record->date_time_out,
+    // TEMP DEBUG LOG — remove once confirmed working.
+    // Check storage/logs/laravel.log after a drop-recovery event.
+    \Illuminate\Support\Facades\Log::info('extendTime called', [
+        'id'              => $id,
+        'add_seconds'     => $addSeconds,
+        'old_date_time_out' => $oldDateTimeOut,
+        'new_date_time_out' => $newDateTimeOut->toDateTimeString(),
     ]);
+
+    DB::table('dbakeformtable')
+        ->where('id', $id)
+        ->update([
+            'old_date_time_out' => $oldDateTimeOut,
+            'date_time_out'     => $newDateTimeOut,
+            'date_add'      => now(),
+        ]);
+
+    return redirect()->back();
 }
 }

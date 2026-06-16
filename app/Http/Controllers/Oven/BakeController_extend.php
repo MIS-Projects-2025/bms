@@ -1,54 +1,51 @@
 <?php
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ADD THIS METHOD to your existing BakeController (or whichever controller
-// handles the bake routes)
-// ─────────────────────────────────────────────────────────────────────────────
-
-// routes/web.php — add this line:
-// Route::put('/bake/{id}/extend', [BakeController::class, 'extendTime'])->name('bake.extend');
-
-// ─────────────────────────────────────────────────────────────────────────────
+// routes/web.php:
+// Route::put('/bake/{id}/extend', [OvenListController::class, 'extendTime'])->name('bake.extend');
 
 /**
  * Extend date_time_out by the number of seconds the temp was below target.
- * Called automatically by the frontend when actual temp recovers.
  *
  * PUT /bake/{id}/extend
- * Body: { add_seconds: int }
+ * Body: { add_seconds: int }   ← total seconds, e.g. 332 for 00:05:32
  */
-// public function extendTime(Request $request, $id)
-// {
-//     $request->validate([
-//         'add_seconds' => 'required|integer|min=1',
-//     ]);
+public function extendTime(Request $request, $id)
+{
+    $request->validate([
+        'add_seconds' => ['required', 'integer', 'min:1'],
+    ]);
 
-//     $record = \App\Models\DbakeFormTable::findOrFail($id);
+    $record = DB::table('dbakeformtable')->where('id', $id)->first();
 
-//     // Only extend if the bake is still active (not completed/interrupted)
-//     if (!in_array($record->bake_status, ['inuse', 'ongoing', 'active'])) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'Bake record is not active.',
-//         ], 422);
-//     }
+    if (!$record) {
+        return redirect()->back()->with('error', 'Record not found.');
+    }
 
-//     $addSeconds = (int) $request->add_seconds;
+    if (!in_array($record->bake_status, ['inuse', 'ongoing', 'active'])) {
+        return redirect()->back()->with('error', 'Bake record is not active.');
+    }
 
-//     // Save old date_time_out before modifying (for audit trail)
-//     $record->old_date_time_out = $record->date_time_out;
+    $addSeconds     = (int) $request->add_seconds;
+    $oldDateTimeOut = $record->date_time_out;
 
-//     // Add elapsed drop time to date_time_out
-//     $record->date_time_out = \Carbon\Carbon::parse($record->date_time_out)
-//         ->addSeconds($addSeconds);
+    $newDateTimeOut = \Carbon\Carbon::parse($oldDateTimeOut)
+        ->addSeconds($addSeconds);
 
-//     $record->save();
+    // TEMP DEBUG LOG — remove once confirmed working.
+    // Check storage/logs/laravel.log after a drop-recovery event.
+    \Illuminate\Support\Facades\Log::info('extendTime called', [
+        'id'              => $id,
+        'add_seconds'     => $addSeconds,
+        'old_date_time_out' => $oldDateTimeOut,
+        'new_date_time_out' => $newDateTimeOut->toDateTimeString(),
+    ]);
 
-//     return response()->json([
-//         'success'          => true,
-//         'message'          => "Extended date_time_out by {$addSeconds} seconds due to temperature drop.",
-//         'added_seconds'    => $addSeconds,
-//         'old_date_time_out'=> $record->old_date_time_out,
-//         'new_date_time_out'=> $record->date_time_out,
-//     ]);
-// }
+    DB::table('dbakeformtable')
+        ->where('id', $id)
+        ->update([
+            'old_date_time_out' => $oldDateTimeOut,
+            'date_time_out'     => $newDateTimeOut,
+        ]);
+
+    return redirect()->back();
+}

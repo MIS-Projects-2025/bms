@@ -2,6 +2,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router } from "@inertiajs/react";
 import { Inbox, Power, Clock, X, Save, AlertTriangle, Eye } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
+import Toast from "@/Components/Toast";
 
 const CHANNEL_MAP = {
     "0001": "TBOVEN03",
@@ -105,7 +106,7 @@ function ChamberModal({ ovenName, chambers, now, onClose, onCooldown, onComplete
 }
 
 export default function OvenList() {
-    const { emp_data } = usePage().props;
+    const { emp_data, flash } = usePage().props;
     const role = emp_data?.emp_system_role?.toLowerCase().trim();
     const { ovenList, ovenDetails, ovenStatus, bakePackageDetails } = usePage().props;
 
@@ -117,6 +118,18 @@ export default function OvenList() {
     const [dropTimers, setDropTimers]   = useState({});
     const dropTimersRef                 = useRef({});
     const savingRef                     = useRef({});
+
+    // Toast notification
+    const [toast, setToast] = useState(null); // { message, type }
+
+    // Watch Inertia flash messages (from redirect()->back()->with(...))
+    useEffect(() => {
+        if (flash?.success) {
+            setToast({ message: flash.success, type: "success" });
+        } else if (flash?.error) {
+            setToast({ message: flash.error, type: "error" });
+        }
+    }, [flash]);
 
     // Modal states
     const [addTimeModal, setAddTimeModal]   = useState(false);
@@ -174,6 +187,12 @@ export default function OvenList() {
     }, []);
 
     // ── Drop timer logic ────────────────────────────────────────────────────
+    // Uses a grace period before confirming "recovered" — prevents sensor
+    // noise/flicker around the target temp from prematurely cutting the timer
+    // and saving only a few seconds instead of the real total drop duration.
+    const recoveryGraceRef = useRef({}); // { ovenName: timestamp when recovery first seen }
+    const GRACE_MS = 10000; // must stay recovered for 10s before we save & stop
+
     useEffect(() => {
         ovenList.forEach((oven) => {
             const ovenName = oven.machine_num;
@@ -192,24 +211,52 @@ export default function OvenList() {
             const isDropping = actualTemp < targetTemp;
             const timerState = dropTimersRef.current[ovenName];
 
-            if (isDropping && !timerState) {
-                dropTimersRef.current[ovenName] = { startedAt: Date.now(), elapsed: 0 };
-                setDropTimers((prev) => ({ ...prev, [ovenName]: { startedAt: Date.now(), elapsed: 0 } }));
+            if (isDropping) {
+                recoveryGraceRef.current[ovenName] = null;
+
+                if (!timerState) {
+                    const started = { startedAt: Date.now(), elapsed: 0 };
+                    dropTimersRef.current[ovenName] = started;
+                    setDropTimers((prev) => ({ ...prev, [ovenName]: started }));
+                    console.log(`[DropTimer] ${ovenName}: STARTED at`, new Date(started.startedAt).toLocaleTimeString());
+                }
+                return;
             }
 
-            if (!isDropping && timerState && !savingRef.current[ovenName]) {
-                const elapsed = Math.floor((Date.now() - timerState.startedAt) / 1000);
-                savingRef.current[ovenName] = true;
-                activeChambers.forEach((ch) => {
-                    router.put(route("bake.extend", ch.id), { add_seconds: elapsed }, {
-                        preserveScroll: true,
-                        onSuccess: () => router.reload({ only: ["ovenDetails"] }),
-                        onFinish: () => { savingRef.current[ovenName] = false; },
-                    });
-                });
-                dropTimersRef.current[ovenName] = null;
-                setDropTimers((prev) => ({ ...prev, [ovenName]: null }));
+            if (!timerState || savingRef.current[ovenName]) return;
+
+            if (!recoveryGraceRef.current[ovenName]) {
+                recoveryGraceRef.current[ovenName] = Date.now();
+                console.log(`[DropTimer] ${ovenName}: recovery grace started, waiting ${GRACE_MS / 1000}s to confirm`);
+                return;
             }
+
+            const recoveredFor = Date.now() - recoveryGraceRef.current[ovenName];
+            if (recoveredFor < GRACE_MS) return;
+
+            // Confirmed recovered — compute elapsed directly from the ORIGINAL startedAt.
+            // This is the single source of truth — same ref used for display.
+            const elapsedMs = Date.now() - timerState.startedAt;
+            const elapsed    = Math.floor(elapsedMs / 1000);
+
+            console.log(`[DropTimer] ${ovenName}: RECOVERED. startedAt=${new Date(timerState.startedAt).toLocaleTimeString()} now=${new Date().toLocaleTimeString()} elapsed=${elapsed}s`);
+
+            savingRef.current[ovenName] = true;
+            recoveryGraceRef.current[ovenName] = null;
+
+            activeChambers.forEach((ch) => {
+                router.put(route("bake.extend", ch.id), { add_seconds: elapsed }, {
+                    preserveScroll: true,
+                    onError: (errors) => {
+                        console.error(`[DropTimer] ${ovenName}: save FAILED`, errors);
+                        setToast({ message: "Failed to extend bake time. Please check the oven manually.", type: "error" });
+                    },
+                    onFinish: () => { savingRef.current[ovenName] = false; },
+                });
+            });
+
+            dropTimersRef.current[ovenName] = null;
+            setDropTimers((prev) => ({ ...prev, [ovenName]: null }));
         });
     }, [actualTemps, now]);
 
@@ -360,6 +407,15 @@ export default function OvenList() {
         <AuthenticatedLayout>
             <Head title="Oven List" />
             <audio ref={alarmRef} src="/sounds/freesound_community-security-alarm-80493.mp3" />
+
+            {/* TOAST */}
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
 
             {/* HEADER */}
             <div className="flex items-center gap-2 mb-4">

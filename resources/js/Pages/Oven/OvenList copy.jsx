@@ -14,10 +14,10 @@ export default function OvenList() {
 
     const [now, setNow] = useState(new Date());
 
-    
 
 
-    
+
+
     useEffect(() => {
     const interval = setInterval(() => {
         router.reload({
@@ -63,11 +63,11 @@ export default function OvenList() {
 useEffect(() => {
     let hasActiveAlarm = false;
 
-    
+
 
     ovenDetails.forEach((ch) => {
 
-        
+
         const end = new Date(ch.end);
         const remainingSec = Math.floor((end - now) / 1000);
 
@@ -231,7 +231,7 @@ const toggleOvenStatus = (ovenName, currentStatus) => {
 
     if (currentStatus === "shutdown") {
 
-        
+
 
         setSelectedOven({ ovenName, newStatus });
         setAddTimeModal(true);
@@ -444,7 +444,7 @@ const isCooldownDone = cooldownEnd && cooldownRemaining <= 0;
 
     <div className="grid gap-2">
         <span className="text-emerald-600 font-bold ml-4">
-           🟢 Done Cooldown READY TO UNLOAD 
+           🟢 Done Cooldown READY TO UNLOAD
         </span>
 
         <button
