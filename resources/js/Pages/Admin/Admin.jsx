@@ -2,11 +2,16 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router } from "@inertiajs/react";
 import DataTable from "@/Components/DataTable";
 import Modal from "@/Components/Modal";
-
 import { useState } from "react";
+import { Button } from "@/Components/ui/button";
+import { Label } from "@/Components/ui/label";
 
 export default function Admin({ tableData, tableFilters, emp_data }) {
     const [role, setRole] = useState(null);
+
+    const Adminrole = emp_data?.emp_system_role?.toLowerCase().trim();
+
+    console.log(role);
 
     function removeAdmin(id) {
         router.post(
@@ -16,23 +21,25 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                 preserveScroll: true,
                 onSuccess: () => {
                     console.log("Admin removed");
+                    window.location.reload(); // Refresh the page after removal
                 },
             }
         );
     }
 
     function changeRole(id) {
-        role &&
-            router.patch(
-                route("changeAdminRole"),
-                { id, role },
-                {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        console.log("Admin role changed");
-                    },
-                }
-            );
+        if (!role) return;
+
+        router.patch(
+            route("changeAdminRole"),
+            { id, role },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    console.log("Admin role changed");
+                },
+            }
+        );
     }
 
     const tableModalClose = (close) => {
@@ -42,34 +49,28 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
 
     return (
         <AuthenticatedLayout>
-            <Head title="Manage Administrators" />
+            <Head title="Manage Admin" />
 
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold">Administrators</h1>
+                <h1 className="text-2xl font-bold text-blue-800 hover:text-blue-900">
+                    <i className="fa-solid fa-users"></i> Administrator`s
+                </h1>
 
-                {["superadmin", "admin"].includes(
-                    emp_data?.emp_system_role
-                ) && (
-                    <button
-                        className="text-blue-600 border-blue-600 btn"
+                    <Button
+
                         onClick={() =>
-                            router.get(
-                                route("index_addAdmin"),
-                                {},
-                                { preserveScroll: true }
-                            )
+                            router.get(route("index_addAdmin"), {}, { preserveScroll: true })
                         }
                     >
-                        Add New Admin
-                    </button>
-                )}
+                        <i className="fa-solid fa-user-plus"></i> New Admin
+                    </Button>
             </div>
 
             <DataTable
                 columns={[
                     { key: "emp_id", label: "ID" },
                     { key: "emp_name", label: "Employee Name" },
-                    { key: "emp_role", label: "Role" },
+                    { key: "emp_jobtitle", label: "Job Title" },
                 ]}
                 data={tableData.data}
                 meta={{
@@ -82,60 +83,83 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                 }}
                 routeName={route("admin")}
                 filters={tableFilters}
-                rowKey="EMPLOYID"
-                // selectable={true}
-                // onSelectionChange={setSelectedRows}
-                // dateRangeSearch={true}
+                rowKey="emp_id"
                 showExport={false}
             >
                 {(row, close) => (
                     <Modal
                         id="RowModal"
-                        title={`Admin Details`}
+                        icon="<i className='fa-solid fa-users-gear mr-2 text-blue-600'></i>"
+                        title="Employee Details"
                         show={true}
                         onClose={() => tableModalClose(close)}
-                        className="w-[300px]"
+                        className="max-w-md w-full rounded-2xl shadow-xl bg-white dark:text-gray-200 dark:bg-gray-800 p-6 border border-gray-200 dark:border-gray-700"
                     >
-                        <p>
-                            <strong>ID:</strong> {row.emp_id}
-                        </p>
-                        <strong>Name:</strong> {row.emp_name}
-                        <p>
-                            <strong>Role:</strong> {row.emp_role}
-                        </p>
-                        {["superadmin", "admin"].includes(
-                            emp_data?.emp_system_role
-                        ) && (
-                            <div>
-                                <select
-                                    defaultValue={row.emp_role}
-                                    onChange={(e) => setRole(e.target.value)}
-                                    className="mt-5 select"
-                                >
-                                    {/* <option value={null}></option> */}
-                                    <option value="superadmin">
-                                        Superadmin
-                                    </option>
-                                    <option value="admin">Admin</option>
-                                    <option value="moderator">Moderator</option>
-                                </select>
-
-                                <div className="flex justify-end gap-1 mt-5">
-                                    <button
-                                        className="text-blue-600 btn"
-                                        onClick={() => changeRole(row.emp_id)}
-                                    >
-                                        Update Role
-                                    </button>
-                                    <button
-                                        className="text-red-600 btn"
-                                        onClick={() => removeAdmin(row.emp_id)}
-                                    >
-                                        Remove
-                                    </button>
+                        <div className="space-y-4">
+                            {/* User Info */}
+                            <div className="text-center">
+                                <div className="text-4xl text-blue-800 mb-2">
+                                    <i className="fa-solid fa-user-circle"></i>
                                 </div>
+                                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-800">
+                                    {row.emp_name}
+                                </h2>
+                                <p className="text-sm text-gray-500 dark:text-gray-800">
+                                    ID: <span className="font-semibold">{row.emp_id}</span>
+                                </p>
+                                <p className="mt-1 text-sm text-gray-600 dark:text-gray-800">
+                                    Current Role:{" "}
+                                    <span className="font-semibold text-blue-800 dark:text-blue-600">
+                                        {row.emp_role}
+                                    </span>
+                                </p>
+                                <p className="mt-1 text-sm text-gray-600 dark:text-gray-800">
+                                    Job Title:{" "}
+                                    <span className="font-semibold text-gray-700 dark:text-gray-300">
+                                        {row.emp_jobtitle}
+                                    </span>
+                                </p>
                             </div>
-                        )}
+
+                            {["superadmin", "admin"].includes(Adminrole) && (
+    <div className="mt-6 space-y-4">
+
+        <label className="block text-sm font-semibold text-gray-700">
+            Update Role
+        </label>
+
+        <select
+            defaultValue={row.emp_role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full rounded-lg border p-2 text-gray-700"
+        >
+            <option value="admin">Admin</option>
+
+            {Adminrole === "superadmin" && (
+                <option value="superadmin">Superadmin</option>
+            )}
+        </select>
+
+        <div className="flex justify-end gap-3 pt-3">
+
+            <button
+                onClick={() => changeRole(row.emp_id)}
+                className="px-4 py-2 bg-indigo-600 text-white rounded"
+            >
+               <i className="fa-solid fa-pen-to-square"></i> Update Role
+            </button>
+
+            <button
+                onClick={() => removeAdmin(row.emp_id)}
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+               <i className="fa-solid fa-trash"></i> Remove
+            </button>
+
+        </div>
+    </div>
+)}
+                        </div>
                     </Modal>
                 )}
             </DataTable>

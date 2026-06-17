@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { router } from "@inertiajs/react";
-import { Search } from "lucide-react";
 
 export default function DataTable({
     columns,
@@ -14,14 +13,14 @@ export default function DataTable({
     onSelectionChange = () => {},
     showExport = false,
     children,
-    filterDropdown = null,
+    filterDropdown = null, // ✅ filterDropdown prop
 }) {
     const [selected, setSelected] = useState([]);
     const [activeRow, setActiveRow] = useState(null);
     const [searchInput, setSearchInput] = useState(filters.search || "");
     const [perPage, setPerPage] = useState(filters.perPage || 10);
     const [dropdownValue, setDropdownValue] = useState(
-        filters?.[filterDropdown?.key] || "",
+        filters?.[filterDropdown?.key] || ""
     );
 
     const extractDate = (dt) => (dt ? dt.split(" ")[0] : "");
@@ -30,8 +29,8 @@ export default function DataTable({
 
     const themeColor =
         localStorage.getItem("theme") === "dark"
-            ? "hover:bg-blue-800"
-            : "hover:bg-blue-50";
+            ? "hover:bg-gray-700"
+            : "hover:bg-gray-100";
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -46,7 +45,7 @@ export default function DataTable({
         router.get(
             routeName,
             { ...filters, search: searchInput, ...extraFilter },
-            { preserveState: true },
+            { preserveState: true }
         );
     };
 
@@ -63,7 +62,7 @@ export default function DataTable({
                 end: formattedTo,
                 search: undefined,
             },
-            { preserveState: true },
+            { preserveState: true }
         );
     };
 
@@ -113,7 +112,7 @@ export default function DataTable({
         router.get(
             routeName,
             { ...filters, sortBy: key, sortDirection: newDirection },
-            { preserveState: true },
+            { preserveState: true }
         );
     };
 
@@ -142,7 +141,7 @@ export default function DataTable({
                     disabled={current <= 1}
                     onClick={() =>
                         router.visit(
-                            meta.links.find((l) => l.label === "&laquo;")?.url,
+                            meta.links.find((l) => l.label === "&laquo;")?.url
                         )
                     }
                     dangerouslySetInnerHTML={{ __html: "&laquo;" }}
@@ -151,11 +150,11 @@ export default function DataTable({
                     <button
                         key={page}
                         className={`join-item btn btn-sm ${
-                            page === current ? "bg-blue-800 text-white" : ""
+                            page === current ? "btn-primary" : ""
                         }`}
                         onClick={() => {
                             const pageLink = meta.links.find(
-                                (l) => parseInt(l.label) === page,
+                                (l) => parseInt(l.label) === page
                             );
                             if (pageLink?.url) router.visit(pageLink.url);
                         }}
@@ -167,7 +166,7 @@ export default function DataTable({
                     disabled={current >= last}
                     onClick={() =>
                         router.visit(
-                            meta.links.find((l) => l.label === "&raquo;")?.url,
+                            meta.links.find((l) => l.label === "&raquo;")?.url
                         )
                     }
                     dangerouslySetInnerHTML={{ __html: "&raquo;" }}
@@ -177,10 +176,11 @@ export default function DataTable({
     };
 
     return (
-        <div className="w-full p-3 border border-blue-800 rounded-lg">
+        <div className="w-[100%] p-3 border-[1px] border-gray-300 rounded-lg">
+            {/* Filters */}
             <form
                 onSubmit={dateRangeSearch ? handleDateFilter : handleSearch}
-                className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-wrap items-center justify-between gap-2"
             >
                 <select
                     value={perPage}
@@ -190,24 +190,20 @@ export default function DataTable({
                         router.get(
                             routeName,
                             { ...filters, perPage: value },
-                            { preserveState: true },
+                            { preserveState: true }
                         );
                     }}
-                    className="select select-sm w-[100px] py-0 border-blue-800 "
+                    className="select select-sm w-[100px] py-0"
                 >
-                    {[10, 25, 50, 100, 500, 10000].map((num) => (
-                        <option
-                            key={num}
-                            value={num}
-                            className="hover:bg-blue-800"
-                        >
+                    {[10, 25, 50, 100].map((num) => (
+                        <option key={num} value={num}>
                             Show {num}
                         </option>
                     ))}
                 </select>
 
                 {dateRangeSearch ? (
-                    <div className="flex flex-col w-full gap-2 sm:flex-row sm:items-center sm:w-auto">
+                    <div className="flex items-center gap-2">
                         <input
                             type="date"
                             value={dateFrom}
@@ -238,10 +234,10 @@ export default function DataTable({
                         )}
                     </div>
                 ) : (
-                    <div className="flex flex-col w-full gap-2 sm:flex-row sm:items-center sm:w-auto">
+                    <div className="flex items-center gap-2">
                         {filterDropdown && (
                             <select
-                                className="select select-sm w-full sm:w-[170px] py-0"
+                                className="select select-sm w-[170px] py-0"
                                 value={dropdownValue}
                                 onChange={(e) => {
                                     const value = e.target.value;
@@ -255,7 +251,7 @@ export default function DataTable({
                                             dropdownFields:
                                                 filterDropdown.fields.join(","),
                                         },
-                                        { preserveState: true },
+                                        { preserveState: true }
                                     );
                                 }}
                             >
@@ -272,13 +268,26 @@ export default function DataTable({
                             placeholder="Search..."
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            className="w-full input input-sm sm:w-auto bg-blue-50 input-bordered text-stone-700"
+                            className="input input-sm input-bordered"
                         />
                         <button
                             type="submit"
-                            className="px-2 btn btn-sm bg-blue-800 text-white btn-outline"
+                            className="px-2 btn btn-sm btn-primary"
                         >
-                            <Search className="w-4 h-4" />
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth="1.5"
+                                stroke="currentColor"
+                                className="size-4"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                                />
+                            </svg>
                         </button>
                         {showExport && (
                             <button
@@ -293,8 +302,9 @@ export default function DataTable({
                 )}
             </form>
 
-            <div className="w-full mt-4 overflow-x-auto">
-                <table className="table min-w-full table-zebra">
+            {/* Table */}
+            <div className="mt-4 overflow-x-auto">
+                <table className="table table-zebra min-w-[100%]">
                     <thead>
                         <tr>
                             {selectable && (
@@ -344,7 +354,7 @@ export default function DataTable({
                             data.map((row, index) => {
                                 const key = `${row[rowKey]}-${index}`;
                                 const isSelected = selected.some(
-                                    (r) => r[rowKey] === row[rowKey],
+                                    (r) => r[rowKey] === row[rowKey]
                                 );
                                 return (
                                     <tr
@@ -370,7 +380,7 @@ export default function DataTable({
                                         {columns.map((col, i) => (
                                             <td
                                                 key={`${key}-${col.key}-${i}`}
-                                                className="whitespace-nowrap max-w-[200px] truncate"
+                                                className="whitespace-nowrap"
                                             >
                                                 {row[col.key] ?? "-"}
                                             </td>
@@ -383,15 +393,17 @@ export default function DataTable({
                 </table>
             </div>
 
+            {/* Pagination */}
             {meta?.links?.length > 0 && (
-                <div className="flex flex-col gap-2 mt-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="text-sm text-blue-700">
+                <div className="flex flex-wrap items-center justify-between gap-2 mt-4">
+                    <div className="text-sm text-gray-500">
                         Showing {meta.from} to {meta.to} of {meta.total} results
                     </div>
                     {renderPaginationLinks()}
                 </div>
             )}
 
+            {/* Row Modal */}
             {typeof children === "function" &&
                 activeRow &&
                 children(activeRow, () => setActiveRow(null))}

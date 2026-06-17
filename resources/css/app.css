@@ -1,77 +1,117 @@
+/* Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+@import '@fortawesome/fontawesome-free/css/all.min.css';
 
+
+/* Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* DaisyUI */
 @plugin "daisyui" {
-    themes:
-        light --default,
-        dark --prefersdark;
+    themes: light --default, dark --prefersdark;
 }
 
+/* 🔧 Fix Ant Design Input in dark mode */
+.ant-input,
+.ant-input-affix-wrapper {
+    background-color: var(--ant-color-bg-container) !important;
+    color: var(--ant-color-text) !important;
+}
+
+.ant-input::placeholder {
+    color: var(--ant-color-text-placeholder) !important;
+}
+
+/* 🌐 BASE THEME */
 @layer base {
     :root {
+        /* Layout */
         --background: 0 0% 100%;
-        --foreground: 142 40% 10%;
+        --foreground: 0 0% 3.9%;
+
         --card: 0 0% 100%;
-        --card-foreground: 142 40% 10%;
+        --card-foreground: 0 0% 3.9%;
+
         --popover: 0 0% 100%;
-        --popover-foreground: 142 40% 10%;
-        --primary: 142 72% 29%;
+        --popover-foreground: 0 0% 3.9%;
+
+        /* PRIMARY (#007bff) */
+        --primary: 211 100% 50%;
         --primary-foreground: 0 0% 98%;
-        --secondary: 142 30% 94%;
-        --secondary-foreground: 142 50% 20%;
-        --muted: 142 20% 95%;
-        --muted-foreground: 142 15% 45%;
-        --accent: 142 30% 90%;
-        --accent-foreground: 142 50% 20%;
+
+        --primary-hover: 211 100% 45%;
+        --primary-active: 211 100% 40%;
+        --primary-muted: 211 100% 90%;
+        --primary-border: 211 100% 55%;
+        --primary-ring: 211 100% 50%;
+
+        /* DaisyUI mapping */
+        --p: 211 100% 50%;
+        --pc: 0 0% 98%;
+
+        /* Secondary */
+        --secondary: 0 0% 96.1%;
+        --secondary-foreground: 0 0% 9%;
+
+        /* UI states */
+        --muted: 0 0% 96.1%;
+        --muted-foreground: 0 0% 45.1%;
+
+        --accent: 0 0% 96.1%;
+        --accent-foreground: 0 0% 9%;
+
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 0 0% 98%;
-        --border: 142 20% 88%;
-        --input: 142 20% 88%;
-        --ring: 142 72% 29%;
-        --chart-1: 142 72% 29%;
-        --chart-2: 142 58% 39%;
-        --chart-3: 142 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
+
+        /* Borders & inputs */
+        --border: 0 0% 89.8%;
+        --input: 0 0% 89.8%;
+        --ring: var(--primary-ring);
+
         --radius: 0.5rem;
     }
 
+    /* 🌙 DARK MODE */
     .dark {
-        --background: 142 20% 6%;
+        --background: 0 0% 3.9%;
         --foreground: 0 0% 98%;
-        --card: 142 20% 8%;
+
+        --card: 0 0% 3.9%;
         --card-foreground: 0 0% 98%;
-        --popover: 142 20% 8%;
+
+        --popover: 0 0% 3.9%;
         --popover-foreground: 0 0% 98%;
-        --primary: 142 60% 45%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 142 20% 14%;
+
+        /* PRIMARY (#007bff adjusted for dark mode) */
+        --primary: 211 100% 55%;
+        --primary-foreground: 0 0% 9%;
+
+        --primary-hover: 211 100% 60%;
+        --primary-active: 211 100% 50%;
+        --primary-muted: 211 100% 20%;
+        --primary-border: 211 100% 60%;
+        --primary-ring: 211 100% 60%;
+
+        /* DaisyUI */
+        --p: 211 100% 60%;
+        --pc: 0 0% 9%;
+
+        --secondary: 0 0% 14.9%;
         --secondary-foreground: 0 0% 98%;
-        --muted: 142 15% 14%;
-        --muted-foreground: 142 10% 63%;
-        --accent: 142 20% 14%;
+
+        --muted: 0 0% 14.9%;
+        --muted-foreground: 0 0% 63.9%;
+
+        --accent: 0 0% 14.9%;
         --accent-foreground: 0 0% 98%;
+
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 0 0% 98%;
-        --border: 142 15% 18%;
-        --input: 142 15% 18%;
-        --ring: 142 60% 45%;
-        --chart-1: 142 60% 45%;
-        --chart-2: 142 50% 38%;
-        --chart-3: 142 40% 30%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-    }
 
-    * {
-        @apply border-border;
-    }
-
-    body {
-        @apply bg-background text-foreground;
-        font-family: "Poppins", sans-serif;
+        --border: 0 0% 14.9%;
+        --input: 0 0% 14.9%;
+        --ring: var(--primary-ring);
     }
 }

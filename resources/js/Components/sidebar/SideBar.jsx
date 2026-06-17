@@ -2,14 +2,14 @@ import { Link, usePage, router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import Navigation from "@/Components/sidebar/Navigation";
 import { cn } from "@/lib/utils";
-import { Button } from "@/Components/ui/button";
-import { Separator } from "@/Components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "@/Components/ui/tooltip";
+} from "@/components/ui/tooltip";
 import {
     Dialog,
     DialogContent,
@@ -18,9 +18,9 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/Components/ui/dialog";
-import { Textarea } from "@/Components/ui/textarea";
-import { Label } from "@/Components/ui/label";
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
     Menu,
     X,
@@ -29,7 +29,7 @@ import {
     MonitorSmartphone,
     ShieldAlert,
     ShieldCheck,
-    FileWarning,
+    ReceiptText ,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -151,7 +151,7 @@ export default function Sidebar() {
                     {/* ── Logo ── */}
                     <div
                         className={cn(
-                            "flex items-center h-14 shadow-lg",
+                            "flex items-center h-14",
                             isSidebarOpen ? "px-4" : "px-0 justify-center",
                         )}
                     >
@@ -163,7 +163,7 @@ export default function Sidebar() {
                             )}
                         >
                             <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-primary shadow-md">
-                                <FileWarning className="w-4 h-4 text-primary-foreground" />
+                                <ReceiptText  className="w-4 h-4 text-primary-foreground" />
                             </div>
 
                             {isSidebarOpen && (
@@ -175,10 +175,10 @@ export default function Sidebar() {
                                         {formattedAppName}
                                     </span>
                                     <span
-                                        className="text-[7px] font-medium tracking-widest uppercase
+                                        className="text-[9px] font-medium tracking-widest uppercase mt-1 font-bold dark:text-muted-foreground
                                         text-primary/70"
                                     >
-                                        Workspace
+                                        BAKE MONITORING SYSTEM
                                     </span>
                                 </div>
                             )}

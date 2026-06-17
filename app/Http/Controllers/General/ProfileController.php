@@ -26,6 +26,7 @@ class ProfileController extends Controller
 
     public function changePassword(Request $request)
     {
+
         $credentials = $request->validate([
             'current_password' => 'required',
             'new_password' => 'required|confirmed',
@@ -35,22 +36,22 @@ class ProfileController extends Controller
             'new_password.confirmed' => 'The new password and confirmation do not match.',
         ]);
 
-        $empId = session('emp_data')['emp_id'];
-
-        $auth = DB::connection('masterlist')
-            ->table('employee_auth')
-            ->select('password')
-            ->where('employid', $empId)
+        $profile = DB::connection('masterlist')
+            ->table('employee_masterlist')
+            ->select('PASSWRD')
+            ->where('EMPLOYID', session('emp_data')['emp_id'])
             ->first();
 
-        if (!$auth || !password_verify($credentials['current_password'], $auth->password)) {
+        if ($profile->PASSWRD != $credentials['current_password']) {
             return back()->withErrors(['current_password' => 'Current password is incorrect.']);
         }
 
         DB::connection('masterlist')
-            ->table('employee_auth')
-            ->where('employid', $empId)
-            ->update(['password' => password_hash($credentials['new_password'], PASSWORD_BCRYPT)]);
+            ->table('employee_masterlist')
+            ->where('EMPLOYID', session('emp_data')['emp_id'])
+            ->update([
+                'PASSWRD' => $credentials['new_password'],
+            ]);
 
         return back()->with('success', 'Password changed successfully.');
     }

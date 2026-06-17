@@ -1,55 +1,64 @@
-// Modal.jsx
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 export default function Modal({
-    id,
-    title = "Modal Title",
-    buttonText = "",
+    show,
+    title,
+    onClose,
     children,
-    buttonClass = "",
-    className = "",
-    show = false,
-    onClose = () => {},
+    size = "lg",
 }) {
-    const modalRef = useRef(null);
-
     useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === "Escape") onClose();
+        };
+
         if (show) {
-            modalRef.current?.showModal();
-        } else {
-            modalRef.current?.close();
+            document.addEventListener("keydown", handleEsc);
+            document.body.style.overflow = "hidden";
         }
+
+        return () => {
+            document.removeEventListener("keydown", handleEsc);
+            document.body.style.overflow = "auto";
+        };
     }, [show]);
 
-    return (
-        <>
-            {buttonText && (
-                <button
-                    className={buttonClass}
-                    onClick={() => modalRef.current?.showModal()}
-                >
-                    {buttonText}
-                </button>
-            )}
+    if (!show) return null;
 
-            <dialog id={id} className="modal" ref={modalRef} onClose={onClose}>
-                <div className={`modal-box ${className}`}>
-                    <div>
-                        <button
-                            type="button"
-                            className="absolute btn btn-sm btn-circle btn-ghost right-2 top-2"
-                            onClick={() => {
-                                modalRef.current?.close();
-                                onClose();
-                            }}
-                        >
-                            ✕
-                        </button>
-                        <h3 className="text-lg font-bold">{title}</h3>
-                        <div className="pt-4">{children}</div>
-                    </div>
+    const sizeClasses = {
+        sm: "max-w-md",
+        md: "max-w-lg",
+        lg: "max-w-2xl",
+        xl: "max-w-4xl",
+        full: "max-w-6xl",
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
+            
+            {/* MODAL BOX */}
+            <div
+                className={`w-full ${sizeClasses[size]} bg-white rounded-2xl shadow-2xl overflow-hidden animate-fadeIn`}
+            >
+                {/* HEADER */}
+                <div className="flex items-center justify-between px-5 py-4 border-b bg-gradient-to-r from-blue-700 to-blue-800">
+                    <h2 className="text-lg font-semibold text-white">
+                        {title}
+                    </h2>
+
+                    <button
+                        onClick={onClose}
+                        className="text-white transition hover:scale-110"
+                    >
+                        <i className="text-lg fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-            </dialog>
-        </>
+
+                {/* BODY */}
+                <div className="p-5 max-h-[80vh] overflow-y-auto">
+                    {children}
+                </div>
+            </div>
+        </div>
     );
 }

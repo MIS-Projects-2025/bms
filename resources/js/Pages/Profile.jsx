@@ -24,8 +24,12 @@ export default function Profile({ profile, errors }) {
             {
                 preserveScroll: true,
                 onSuccess: () => {
+                    const token = localStorage.getItem("authify-token");
                     localStorage.removeItem("authify-token");
-                    window.location.href = route("logout");
+                    router.get(route("logout"));
+                    window.location.href = `http://192.168.2.221:8200/logout?key=${encodeURIComponent(
+                        token,
+                    )}&redirect=${encodeURIComponent(route("dashboard"))}`;
                 },
             },
         );
