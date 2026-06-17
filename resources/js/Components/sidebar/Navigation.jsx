@@ -5,12 +5,6 @@ import Dropdown from "./DropDown";
 
 export default function NavLinks({ isSidebarOpen }) {
     const { emp_data } = usePage().props;
-    const role = emp_data?.emp_system_role?.toLowerCase().trim();
-    const empProduction = emp_data?.emp_dept?.includes("Production");
-    const isAdmin = ["superadmin", "admin"].includes(role);
-
-    const isAllowed = empProduction || isAdmin;
-
 
     // console.log(emp_data);
 
