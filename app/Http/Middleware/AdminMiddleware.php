@@ -17,7 +17,7 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (session('emp_data')) {
-            $checkIfExists = DB::table('admin')
+            $checkIfExists = DB::connection('mysql')->table('admin')
                 ->where('emp_id', session('emp_data')['emp_id'])
                 ->exists();
 
