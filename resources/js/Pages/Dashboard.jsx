@@ -217,7 +217,7 @@ export default function Dashboard() {
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                     {/* GRAPH 1 */}
                     <div className={cardClass}>
                         <div className="flex flex-wrap gap-4 justify-between items-center mb-5">
