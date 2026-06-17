@@ -1,4 +1,4 @@
-import { X, Eye } from "lucide-react";
+import { X, Eye, Power, Clock, Save, AlertTriangle } from "lucide-react";
 import { router, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 
@@ -8,13 +8,111 @@ export default function BakeModal({
     selectedOven,
     getChamberStatus,
     groupedData,
+    ovenStatus,
 }) {
     const { emp_data } = usePage().props;
 
     const dept = emp_data?.emp_jobtitle_id === 154;
+    const role = emp_data?.emp_system_role?.toLowerCase().trim();
+
+    const currentStatus = ovenStatus?.[selectedOven]?.status || "idle";
 
     const [selectedChamber, setSelectedChamber] = useState(null);
     const [loadingId, setLoadingId] = useState(null);
+
+    // ── Power on/off ──────────────────────────────────────────────
+    const [addTimeModal, setAddTimeModal] = useState(false);
+    const [powerOnTarget, setPowerOnTarget] = useState(null);
+    const [timeInput, setTimeInput] = useState({
+        hours: "",
+        minutes: "",
+        seconds: "",
+    });
+    const [interruptionReason, setInterruptionReason] = useState("");
+    const [submittingPowerOn, setSubmittingPowerOn] = useState(false);
+
+    const toggleOvenStatus = (ovenName, status) => {
+        const newStatus = status === "shutdown" ? "idle" : "shutdown";
+
+        if (status === "shutdown") {
+            // Papasok pa lang sa "idle" / power on — kailangan munang mag-fillup
+            setPowerOnTarget({ ovenName, newStatus });
+            setAddTimeModal(true);
+            return;
+        }
+
+        // Direktang shutdown, walang kailangang fillup
+        router.put(
+            route("ovenstatus.shutdown", ovenName),
+            { status: newStatus },
+            {
+                preserveScroll: true,
+            },
+        );
+    };
+
+    const closePowerOnModal = () => {
+        setAddTimeModal(false);
+        setPowerOnTarget(null);
+        setTimeInput({ hours: "", minutes: "", seconds: "" });
+        setInterruptionReason("");
+    };
+
+    const submitPowerOn = () => {
+        if (!interruptionReason.trim()) {
+            alert("Paki-fill up ang Interruption Reason bago mag-submit.");
+            return;
+        }
+
+        const h = Number(timeInput.hours || 0);
+        const m = Number(timeInput.minutes || 0);
+        const s = Number(timeInput.seconds || 0);
+
+        if (h < 0 || m < 0 || s < 0) {
+            alert("Invalid input");
+            return;
+        }
+
+        setSubmittingPowerOn(true);
+
+        router.put(
+            route("ovenstatus.update", powerOnTarget.ovenName),
+            {
+                status: powerOnTarget.newStatus,
+                add_seconds: h * 3600 + m * 60 + s,
+                interruption_reason: interruptionReason,
+            },
+            {
+                preserveScroll: true,
+                onFinish: () => setSubmittingPowerOn(false),
+                onSuccess: () => {
+                    closePowerOnModal();
+                    router.reload({
+                        only: ["ovenStatus", "bakePackageDetails"],
+                        preserveState: true,
+                    });
+                },
+            },
+        );
+    };
+
+    const startCooldown = (item) => {
+        setLoadingId(item.id);
+        router.put(
+            route("bake.cooldown", item.id),
+            {},
+            {
+                preserveScroll: true,
+                onFinish: () => setLoadingId(null),
+                onSuccess: () => {
+                    router.reload({
+                        only: ["bakePackageDetails"],
+                        preserveState: true,
+                    });
+                },
+            },
+        );
+    };
 
     const handleComplete = (id) => {
         setLoadingId(id);
@@ -37,7 +135,7 @@ export default function BakeModal({
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({
-                only: ["bakePackageDetails"],
+                only: ["bakePackageDetails", "ovenStatus"],
                 preserveState: true,
                 preserveScroll: true,
             });
@@ -67,6 +165,14 @@ export default function BakeModal({
         );
     };
 
+                                const statusColors = {
+                                    inuse: "text-green-600",
+                                    ongoing: "text-green-600",
+                                    shutdown: "text-blue-600",
+                                    idle: "text-gray-600",
+                                    cooldown: "text-purple-600",
+                                };
+
     return (
         <>
             {/* MAIN MODAL */}
@@ -74,16 +180,56 @@ export default function BakeModal({
                 <div className="bg-white w-[1200px] max-w-7xl h-[100vh] rounded-xl overflow-y-auto p-5">
                     {/* HEADER */}
                     <div className="flex items-center justify-between mb-5">
-                        <h2 className="text-xl font-bold text-blue-800">
-                            Oven {selectedOven}
-                        </h2>
+                        <div>
+                            <h2 className="text-xl font-bold text-blue-800">
+                                Oven {selectedOven}
+                            </h2>
 
-                        <button
-                            onClick={onClose}
-                            className="text-red-500 hover:text-red-700"
-                        >
-                            <X className="w-6 h-6" />
-                        </button>
+
+<p className="text-xs text-gray-500">
+  Status:{" "}
+  <b
+    className={`capitalize ${
+      statusColors[currentStatus?.toLowerCase()] || "text-gray-600"
+    }`}
+  >
+    {currentStatus}
+  </b>
+</p>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            {["superadmin", "admin"].includes(role) && (
+                                <button
+                                    onClick={() =>
+                                        toggleOvenStatus(
+                                            selectedOven,
+                                            currentStatus,
+                                        )
+                                    }
+                                    title={
+                                        currentStatus === "shutdown"
+                                            ? "Power on oven"
+                                            : "Shutdown oven"
+                                    }
+                                >
+                                    <Power
+                                        className={`w-5 h-5 ${
+                                            currentStatus === "shutdown"
+                                                ? "text-red-600 hover:text-green-600"
+                                                : "text-green-600 hover:text-red-600"
+                                        }`}
+                                    />
+                                </button>
+                            )}
+
+                            <button
+                                onClick={onClose}
+                                className="text-red-500 hover:text-red-700"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* COLOR GUIDE */}
@@ -199,7 +345,38 @@ export default function BakeModal({
                                                 >
                                                     View
                                                 </button>
-                                                {status.readyToUnload &&
+
+                                                {([
+                                                    "superadmin",
+                                                    "admin",
+                                                ].includes(role) ||
+                                                    [137, 138].includes(
+                                                        emp_data?.emp_jobtitle_id,
+                                                    )) &&
+                                                    status.needsCooldown && (
+                                                        <button
+                                                            onClick={() =>
+                                                                startCooldown(
+                                                                    firstItem,
+                                                                )
+                                                            }
+                                                            className="mt-1 w-full text-xs bg-purple-600 text-white rounded py-1"
+                                                        >
+                                                            {loadingId ===
+                                                            firstItem.id
+                                                                ? "Saving..."
+                                                                : "Start Cooldown"}
+                                                        </button>
+                                                    )}
+
+                                                {([
+                                                    "superadmin",
+                                                    "admin",
+                                                ].includes(role) ||
+                                                    [137, 138].includes(
+                                                        emp_data?.emp_jobtitle_id,
+                                                    )) &&
+                                                    status.readyToUnload &&
                                                     firstItem.approved_by && (
                                                         <button
                                                             onClick={() =>
@@ -288,50 +465,40 @@ export default function BakeModal({
                                                 <td className="border p-2">
                                                     {item.hours}
                                                 </td>
-
                                                 <td className="border p-2">
                                                     {item.temperature}
                                                 </td>
-
                                                 <td className="border p-2">
                                                     {new Date(
                                                         item.date_time_in,
                                                     ).toLocaleString()}
                                                 </td>
-
                                                 <td className="border p-2">
                                                     {item.operator_in}
                                                 </td>
-
                                                 <td className="border p-2">
                                                     {new Date(
                                                         item.date_time_out,
                                                     ).toLocaleString()}
                                                 </td>
-
                                                 <td className="border p-2">
                                                     {item.lotid}
                                                 </td>
-
                                                 <td className="border p-2">
                                                     {item.partname}
                                                 </td>
-
                                                 <td className="border p-2">
                                                     {item.quantity}
                                                 </td>
-
                                                 <td
                                                     className={`border p-2 ${status.text}`}
                                                 >
                                                     {status.label}
                                                 </td>
-
                                                 <td className="border p-2">
                                                     {status.time ??
                                                         status.label}
                                                 </td>
-
                                                 <td className="border">
                                                     {!item?.approved_by ? (
                                                         dept ? (
@@ -356,11 +523,9 @@ export default function BakeModal({
                                                                 <div className="absolute top-0 text-[7px] text-amber-500 font-bold">
                                                                     QA
                                                                 </div>
-
                                                                 <div className="absolute bottom-0 text-[6px] text-green-600 font-semibold">
                                                                     PASSED
                                                                 </div>
-
                                                                 <div className="text-blue-600 text-[9px] font-semibold text-center px-1">
                                                                     {
                                                                         item.approved_by
@@ -376,6 +541,117 @@ export default function BakeModal({
                                 </div>
                             );
                         })}
+                    </div>
+                </div>
+            )}
+
+            {/* POWER ON MODAL — Interruption Reason + Add Time */}
+            {addTimeModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-[70] p-4">
+                    <div className="bg-white w-[480px] max-w-full rounded-2xl shadow-2xl p-6 space-y-6 border border-gray-200">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-green-100 text-green-600 p-2 rounded-full">
+                                    <Clock className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-bold">
+                                        Power On Oven
+                                    </h2>
+                                    <p className="text-xs text-gray-600">
+                                        Oven {powerOnTarget?.ovenName} — fill up
+                                        bago bumalik online
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={closePowerOnModal}
+                                className="text-gray-400 hover:text-red-500"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 p-3 rounded-lg text-sm flex gap-2">
+                            <AlertTriangle className="w-5 h-5 mt-0.5" />
+                            <div>
+                                <p className="font-semibold">Paalala:</p>
+                                <ul className="list-disc ml-4 text-xs">
+                                    <li>Required ang Interruption Reason</li>
+                                    <li>
+                                        Ang oras dito ay idadagdag sa Date Time
+                                        Out ng lahat ng chamber na naka-shutdown
+                                        sa oven na ito
+                                    </li>
+                                    <li>
+                                        Pwedeng iwanang blangko ang oras kung
+                                        wala
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-xs text-gray-500">
+                                Interruption Reason
+                            </label>
+                            <textarea
+                                value={interruptionReason}
+                                onChange={(e) =>
+                                    setInterruptionReason(e.target.value)
+                                }
+                                rows={3}
+                                placeholder="Hal. Power outage, maintenance, ..."
+                                className="w-full mt-1 border rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 text-gray-700"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4">
+                            {["hours", "minutes", "seconds"].map((unit) => (
+                                <div
+                                    key={unit}
+                                    className="bg-gray-50 p-3 rounded-lg text-center"
+                                >
+                                    <label className="text-xs text-gray-500 capitalize">
+                                        {unit}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={timeInput[unit]}
+                                        onChange={(e) =>
+                                            setTimeInput({
+                                                ...timeInput,
+                                                [unit]: e.target.value,
+                                            })
+                                        }
+                                        className="w-full mt-1 border rounded-lg p-2 text-lg font-bold text-center focus:ring-2 focus:ring-green-500 text-gray-600"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-between items-center pt-2">
+                            <span className="text-xs text-gray-500">
+                                Leave time blank if not needed
+                            </span>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={closePowerOnModal}
+                                    className="flex items-center gap-1 px-4 py-2 text-sm text-white bg-red-500 hover:bg-red-600 rounded-lg"
+                                >
+                                    <X className="w-4 h-4" /> Cancel
+                                </button>
+                                <button
+                                    onClick={submitPowerOn}
+                                    disabled={submittingPowerOn}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm bg-green-600 text-white hover:bg-green-700 rounded-lg shadow-lg disabled:opacity-50"
+                                >
+                                    <Save className="w-4 h-4" />
+                                    {submittingPowerOn ? "Saving..." : "Submit"}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

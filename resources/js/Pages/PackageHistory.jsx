@@ -3,13 +3,20 @@ import { Head, router } from "@inertiajs/react";
 import DataTable from "@/Components/DataTable";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { FileClock } from "lucide-react";
+import { FileClock, Eye, X } from "lucide-react";
+import { Button } from "@/Components/ui/button";
+import { Badge } from "@/Components/ui/badge";
+import { Dialog, DialogContent, DialogHeader } from "@/Components/ui/dialog";
+import {
+    Table,
+    TableHeader,
+    TableBody,
+    TableRow,
+    TableHead,
+    TableCell,
+} from "@/Components/ui/table";
 
-export default function PackageHistory({
-    tableData,
-    tableFilters,
-    emp_data,
-}) {
+export default function PackageHistory({ tableData, tableFilters, emp_data }) {
     const [openModal, setOpenModal] = useState(false);
     const [timelineData, setTimelineData] = useState([]);
     const [loadingTimeline, setLoadingTimeline] = useState(false);
@@ -22,8 +29,18 @@ export default function PackageHistory({
         const date = new Date(dateString);
 
         const months = [
-            "Jan","Feb","Mar","Apr","May","Jun",
-            "Jul","Aug","Sep","Oct","Nov","Dec"
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
         ];
 
         const month = months[date.getMonth()];
@@ -59,17 +76,14 @@ export default function PackageHistory({
 
         const interval = setInterval(async () => {
             try {
-                const res = await axios.get(
-                    route("package.history.timeline"),
-                    {
-                        params: {
-                            input_type: selectedItem.input_type,
-                            lotid: selectedItem.lotid,
-                            package: selectedItem.package,
-                            partname: selectedItem.partname,
-                        },
-                    }
-                );
+                const res = await axios.get(route("package.history.timeline"), {
+                    params: {
+                        input_type: selectedItem.input_type,
+                        lotid: selectedItem.lotid,
+                        package: selectedItem.package,
+                        partname: selectedItem.partname,
+                    },
+                });
 
                 setTimelineData(res.data);
             } catch (err) {
@@ -114,46 +128,56 @@ export default function PackageHistory({
         complete: "bg-emerald-500",
     };
 
-    const excludedFields = [
-        "id",
-        "dbakeformtable_id",
-        "date_created",
-    ];
+    const excludedFields = ["id", "dbakeformtable_id", "date_created"];
+
+    const loadTimeline = async (item) => {
+        setOpenModal(true);
+        setLoadingTimeline(true);
+        setSelectedItem(item);
+
+        try {
+            const res = await axios.get(route("package.history.timeline"), {
+                params: {
+                    lotid: item.lotid,
+                    package: item.package,
+                },
+            });
+
+            setTimelineData(res.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoadingTimeline(false);
+        }
+    };
 
     // TABLE DATA
     const dataWithAction = tableData.data.map((item) => ({
         ...item,
         actions: (
-            <button
-                onClick={async () => {
-                    setOpenModal(true);
-                    setLoadingTimeline(true);
-                    setSelectedItem(item);
-
-                    try {
-                        const res = await axios.get(
-                            route("package.history.timeline"),
-                            {
-                                params: {
-                                    lotid: item.lotid,
-                                    package: item.package,
-                                },
-                            }
-                        );
-
-                        setTimelineData(res.data);
-                    } catch (err) {
-                        console.error(err);
-                    } finally {
-                        setLoadingTimeline(false);
-                    }
-                }}
-                className="px-3 py-1 bg-sky-800 text-white rounded hover:bg-sky-600 transition"
+            <Button
+                size="sm"
+                onClick={() => loadTimeline(item)}
+                className="bg-sky-800 hover:bg-sky-600"
             >
-                <i className="fa fa-eye"></i> View
-            </button>
+                <Eye className="w-4 h-4" />
+            </Button>
         ),
     }));
+
+    // Only show columns that actually have data somewhere in the timeline,
+    // in the predictable order defined by `labels`
+    const allKeys = Object.keys(labels).filter(
+        (key) =>
+            key !== "bake_status" &&
+            !excludedFields.includes(key) &&
+            timelineData.some(
+                (row) =>
+                    row[key] !== null &&
+                    row[key] !== "" &&
+                    row[key] !== undefined,
+            ),
+    );
 
     return (
         <AuthenticatedLayout>
@@ -161,8 +185,8 @@ export default function PackageHistory({
 
             <div className="flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-bold text-sky-800 hover:text-sky-600">
-                    <i className="fa-solid fa-clock-rotate-left"></i>{" "}
-                    Package History
+                    <i className="fa-solid fa-clock-rotate-left"></i> Package
+                    History
                 </h1>
             </div>
 
@@ -189,161 +213,162 @@ export default function PackageHistory({
             />
 
             {/* MODAL */}
-            {openModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl relative max-h-[90vh] overflow-hidden">
+            <Dialog open={openModal} onOpenChange={setOpenModal}>
+                <DialogContent className="w-full max-w-[95vw] xl:max-w-6xl 2xl:max-w-7xl max-h-[90vh] p-0 gap-0 overflow-hidden flex flex-col [&>button]:hidden">
+                    {/* HEADER */}
+                    <DialogHeader className="sticky top-0 bg-white z-20 border-b px-6 py-4 flex-row items-center justify-between space-y-0">
+                        <div className="flex items-center">
+                            <FileClock className="w-10 h-10 text-sky-800 mr-2" />
 
-                        {/* HEADER */}
-                        <div className="sticky top-0 bg-white z-20 border-b px-6 py-4 flex items-center justify-between">
-                            <div className="flex items-center">
-                                <FileClock className="w-10 h-10 text-sky-800 mr-2" />
+                            <div>
+                                <h2 className="text-xl font-bold text-sky-800">
+                                    Bake Timeline
+                                </h2>
 
-                                <div>
-                                    <h2 className="text-xl font-bold text-sky-800">
-                                        Bake Timeline
-                                    </h2>
-
-                                    {selectedItem && (
-                                        <p className="text-sm text-blue-500 font-semibold">
-                                            {selectedItem.input_type} •{" "}
-                                            {selectedItem.lotid} •{" "}
-                                            {selectedItem.package} •{" "}
-                                            {selectedItem.partname}
-                                        </p>
-                                    )}
-                                </div>
+                                {selectedItem && (
+                                    <p className="text-sm text-blue-500 font-semibold">
+                                        {selectedItem.input_type} •{" "}
+                                        {selectedItem.lotid} •{" "}
+                                        {selectedItem.package} •{" "}
+                                        {selectedItem.partname}
+                                    </p>
+                                )}
                             </div>
-
-                            <button
-                                onClick={() => setOpenModal(false)}
-                                className="text-red-500 hover:text-red-600 transition"
-                            >
-                                <i className="fa fa-times"></i>
-                            </button>
                         </div>
 
-                        {/* BODY */}
-                        <div className="overflow-y-auto max-h-[80vh] p-6">
+                        <button
+                            onClick={() => setOpenModal(false)}
+                            className="text-red-500 hover:text-red-600 transition"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </DialogHeader>
 
-                            {loadingTimeline ? (
-                                <div className="text-center py-16 text-gray-500">
-                                    Loading Timeline...
-                                </div>
-                            ) : timelineData.length === 0 ? (
-                                <div className="text-center py-16 text-gray-500">
-                                    No timeline found.
-                                </div>
-                            ) : (
-                                <div className="relative border-l-4 border-sky-800 ml-4">
+                    {/* BODY */}
+                    <div className="overflow-y-auto max-h-[80vh] p-6">
+                        {loadingTimeline ? (
+                            <div className="text-center py-16 text-gray-500">
+                                Loading Timeline...
+                            </div>
+                        ) : timelineData.length === 0 ? (
+                            <div className="text-center py-16 text-gray-500">
+                                No timeline found.
+                            </div>
+                        ) : (
+                            <Table className="text-xs sm:text-sm">
+                                <TableHeader className="bg-sky-800 sticky top-0 z-10">
+                                    <TableRow className="hover:bg-sky-800">
+                                        <TableHead className="text-white px-2 sm:px-3 py-2 whitespace-nowrap">
+                                            Status
+                                        </TableHead>
+                                        <TableHead className="text-white px-2 sm:px-3 py-2 whitespace-nowrap">
+                                            Date
+                                        </TableHead>
+                                        {allKeys.map((key) => (
+                                            <TableHead
+                                                key={key}
+                                                className="text-white px-2 sm:px-3 py-2"
+                                            >
+                                                {labels[key] || key}
+                                            </TableHead>
+                                        ))}
+                                    </TableRow>
+                                </TableHeader>
 
+                                <TableBody>
                                     {timelineData.map((row, index) => {
-
                                         const status =
                                             row.bake_status?.toLowerCase();
 
                                         return (
-                                            <div
+                                            <TableRow
                                                 key={index}
-                                                className="mb-6 ml-6 relative"
+                                                className={
+                                                    index % 2 === 0
+                                                        ? "bg-white"
+                                                        : "bg-gray-50"
+                                                }
                                             >
+                                                <TableCell className="px-2 sm:px-3 py-2 whitespace-nowrap">
+                                                    <Badge
+                                                        className={`text-white uppercase font-bold ${
+                                                            statusColors[
+                                                                status
+                                                            ] || "bg-sky-800"
+                                                        }`}
+                                                    >
+                                                        {row.bake_status}
+                                                    </Badge>
+                                                </TableCell>
 
-                                                {/* DOT */}
-                                                <div
-                                                    className={`absolute -left-[34px] top-1 w-5 h-5 rounded-full border-4 border-white shadow ${
-                                                        statusColors[status] ||
-                                                        "bg-sky-800"
-                                                    }`}
-                                                ></div>
+                                                <TableCell className="px-2 sm:px-3 py-2 whitespace-nowrap text-gray-500">
+                                                    {formatDate(
+                                                        row.date_created,
+                                                    )}
+                                                </TableCell>
 
-                                                {/* CARD */}
-                                                <div className="bg-gray-50 border rounded-xl p-5 shadow-sm hover:shadow-md transition">
+                                                {allKeys.map((key) => {
+                                                    const value = row[key];
+                                                    const previous =
+                                                        index > 0
+                                                            ? timelineData[
+                                                                  index - 1
+                                                              ][key]
+                                                            : null;
 
-                                                    {/* STATUS */}
-                                                    <div className="flex items-center justify-between mb-4">
-                                                        <span
-                                                            className={`px-3 py-1 rounded-full text-white text-xs font-bold uppercase ${
-                                                                statusColors[
-                                                                    status
-                                                                ] ||
-                                                                "bg-sky-800"
+                                                    const isEmpty =
+                                                        value === null ||
+                                                        value === "" ||
+                                                        value === undefined;
+
+                                                    const changed =
+                                                        !isEmpty &&
+                                                        previous !== null &&
+                                                        previous !== "" &&
+                                                        previous !==
+                                                            undefined &&
+                                                        previous != value;
+
+                                                    const displayValue = isEmpty
+                                                        ? "-"
+                                                        : key.includes("date")
+                                                          ? formatDate(value)
+                                                          : String(value);
+
+                                                    const previousDisplay =
+                                                        key.includes("date")
+                                                            ? formatDate(
+                                                                  previous,
+                                                              )
+                                                            : String(previous);
+
+                                                    return (
+                                                        <TableCell
+                                                            key={key}
+                                                            title={
+                                                                changed
+                                                                    ? `Changed from: ${previousDisplay}`
+                                                                    : undefined
+                                                            }
+                                                            className={`px-2 sm:px-3 py-2 break-words align-top ${
+                                                                changed
+                                                                    ? "bg-emerald-100 text-emerald-800 font-semibold"
+                                                                    : "text-gray-700"
                                                             }`}
                                                         >
-                                                            {row.bake_status}
-                                                        </span>
-
-                                                        <span className="text-sm text-gray-500">
-                                                            {formatDate(row.date_created)}
-                                                        </span>
-                                                    </div>
-
-                                                    {/* DETAILS */}
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-
-                                                        {Object.entries(row)
-                                                            .filter(([key, value]) => {
-                                                                return (
-                                                                    !excludedFields.includes(key) &&
-                                                                    value !== null &&
-                                                                    value !== ""
-                                                                );
-                                                            })
-                                                            .map(([key, value], indexRow) => {
-
-                                                                const previous =
-                                                                    index > 0
-                                                                        ? timelineData[index - 1][key]
-                                                                        : null;
-
-                                                                const changed =
-                                                                    previous !== null &&
-                                                                    previous != value;
-
-                                                                const displayValue =
-                                                                    key.includes("date")
-                                                                        ? formatDate(value)
-                                                                        : String(value);
-
-                                                                const displayPrevious =
-                                                                    key.includes("date")
-                                                                        ? formatDate(previous)
-                                                                        : String(previous);
-
-                                                                return (
-                                                                    <div
-                                                                        key={key}
-                                                                        className={`rounded-lg border p-3 transition-all ${
-                                                                            changed
-                                                                                ? "bg-emerald-100 border-emerald-400"
-                                                                                : "bg-white"
-                                                                        }`}
-                                                                    >
-                                                                        <div className="font-semibold text-gray-700 mb-1">
-                                                                            {labels[key] || key}
-                                                                        </div>
-
-                                                                        <div className="text-gray-800 break-all">
-                                                                            {displayValue}
-                                                                        </div>
-
-                                                                        {changed && (
-                                                                            <div className="mt-2 text-xs text-red-600 font-medium">
-                                                                                Changed from: {displayPrevious}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                                            {displayValue}
+                                                        </TableCell>
+                                                    );
+                                                })}
+                                            </TableRow>
                                         );
                                     })}
-                                </div>
-                            )}
-                        </div>
+                                </TableBody>
+                            </Table>
+                        )}
                     </div>
-                </div>
-            )}
+                </DialogContent>
+            </Dialog>
         </AuthenticatedLayout>
     );
 }

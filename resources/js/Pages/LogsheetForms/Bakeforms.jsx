@@ -11,8 +11,11 @@ export default function Bakeforms({
     tableFilters,
     emp_data,
     bakePackageDetails,
-    chamberPerOvenName
+    chamberPerOvenName,
+    ovenStatus,
 }) {
+
+    // console.log("ovenStatus", ovenStatus);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOven, setSelectedOven] = useState(null);
@@ -125,9 +128,9 @@ useEffect(() => {
            };
        }
 
-       // 🟣 COOLDOWN (NEW)
+       // 🟣 NAKA-COOLDOWN NA TALAGA (galing na sa Start Cooldown)
        if (item.bake_status === "cooldown") {
-           const cooldownSeconds = computeCooldownSeconds?.(item.cooldown_end);
+           const cooldownSeconds = computeCooldownSeconds(item.cooldown_end);
 
            if (cooldownSeconds <= 0) {
                return {
@@ -136,7 +139,7 @@ useEffect(() => {
                    label: "READY TO UNLOAD (COOLDOWN DONE)",
                    pulse: true,
                    time: null,
-                   readyToUnload: true, // ⬅️ idinagdag
+                   readyToUnload: true,
                };
            }
 
@@ -152,15 +155,15 @@ useEffect(() => {
 
        const seconds = computeSeconds(item.date_time_in, item.date_time_out);
 
-       // 🔴 UNLOAD
+       // 🔵 FOR COOLDOWN — tapos na ang bake time, hindi pa naka-start ng cooldown
        if (seconds <= 0) {
            return {
                bg: "bg-red-500/50",
                text: "text-red-600",
-               label: "TO UNLOAD",
+               label: "FOR COOLDOWN",
                pulse: true,
                time: null,
-               readyToUnload: true, // ⬅️ idinagdag
+               needsCooldown: true,
            };
        }
 
@@ -184,7 +187,7 @@ useEffect(() => {
            pulse: false,
            time: getRunningTime(seconds),
        };
-   };;
+   };
 
     // =========================
     // VIEW MODAL
@@ -273,13 +276,13 @@ useEffect(() => {
                 ]}
                 data={dataWithAction}
                 meta={{
-          from: tableData.from,
-          to: tableData.to,
-          total: tableData.total,
-          links: tableData.links,
-          currentPage: tableData.current_page,
-          lastPage: tableData.last_page,
-        }}
+                    from: tableData.from,
+                    to: tableData.to,
+                    total: tableData.total,
+                    links: tableData.links,
+                    currentPage: tableData.current_page,
+                    lastPage: tableData.last_page,
+                }}
                 routeName={route("forms.index")}
                 filters={tableFilters}
                 rowKey="id"
@@ -288,15 +291,15 @@ useEffect(() => {
 
             {/* MODAL */}
             <BakeModal
-    isOpen={isModalOpen}
-    onClose={() => setIsModalOpen(false)}
-    selectedOven={selectedOven}
-    groupedData={groupedData}
-    setGroupedData={setGroupedData}
-    getChamberStatus={getChamberStatus}
-    bakePackageDetails={bakePackageDetails}
-/>
-
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                selectedOven={selectedOven}
+                groupedData={groupedData}
+                setGroupedData={setGroupedData}
+                getChamberStatus={getChamberStatus}
+                bakePackageDetails={bakePackageDetails}
+                ovenStatus={ovenStatus}
+            />
         </AuthenticatedLayout>
     );
 }

@@ -9,7 +9,9 @@ export default function NavLinks({ isSidebarOpen }) {
     // console.log(emp_data);
 
     const role = emp_data?.emp_system_role?.toLowerCase().trim();
-    const empProduction = emp_data?.emp_dept?.includes("Production");
+    const empProduction =
+        emp_data?.emp_dept?.includes("Production") ||
+        [137, 138].includes(emp_data?.emp_jobtitle_id);
     const isAdmin = ["superadmin", "admin"].includes(role);
 
     const isAllowed = empProduction || isAdmin;

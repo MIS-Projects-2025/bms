@@ -26,6 +26,8 @@ class LogsheetFormController extends Controller
     {
 
 
+        $ovenStatus = DB::connection('mysql')->table('oven_status')->get()->keyBy('oven_name');
+
         $chamberPerOvenName = DB::connection('mysql')->table('oven_status')->get();
 
         $bakePackageDetails = DB::connection('mysql')->table('dbakeformtable')->get();
@@ -55,6 +57,7 @@ class LogsheetFormController extends Controller
             'tableData' => $result['data'],
             'chamberPerOvenName' => $chamberPerOvenName,
             'bakePackageDetails' => $bakePackageDetails,
+            'ovenStatus' => $ovenStatus,
             'tableFilters' => $request->only([
                 'search',
                 'perPage',
