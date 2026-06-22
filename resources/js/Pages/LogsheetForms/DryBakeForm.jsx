@@ -6,8 +6,12 @@ import { Vault, ClipboardList } from "lucide-react";
 export default function DryBakeForm({
     ovens = [],
     chambers = [],
-    packageLots = [],
+    // packageLots = [],
 }) {
+    const [lotSuggestions, setLotSuggestions] = useState([]);
+    const [lotLoading, setLotLoading] = useState(false);
+    const lotDebounceRef = useRef(null);
+
     const [availableChambers, setAvailableChambers] = useState([]);
     const [showChamberDropdown, setShowChamberDropdown] = useState(false);
     const [timeOptions, setTimeOptions] = useState([]);
@@ -232,7 +236,7 @@ export default function DryBakeForm({
                         </div>
 
                         {/* LOT ID */}
-                        <div className="flex flex-col">
+                        <div className="flex flex-col relative">
                             <label className="text-sm font-medium text-gray-600 mb-1">
                                 Lot ID
                             </label>
@@ -244,118 +248,176 @@ export default function DryBakeForm({
                                     const value = e.target.value.toUpperCase();
                                     setData("lotid", value);
 
-                                    const found = packageLots.find((item) =>
-                                        item.Lot_Id.toUpperCase().includes(
-                                            value,
-                                        ),
-                                    );
+                                    // clear previous debounce
+                                    if (lotDebounceRef.current)
+                                        clearTimeout(lotDebounceRef.current);
 
-                                    if (found) {
-                                        setData(
-                                            "partname",
-                                            found.Part_Name || "",
-                                        );
-                                        setData(
-                                            "package",
-                                            found.Package_Name || "",
-                                        );
-                                        setData("qty", found.Qty || "");
-
-                                        const bake = found.Bake_Time_Temp || "";
-
-                                        // split OR cases
-                                        const options = bake
-                                            .split(/OR/i)
-                                            .map((s) => s.trim());
-
-                                        const parsed = options
-                                            .map((opt) => {
-                                                if (!opt) return null;
-
-                                                const cleaned = opt
-                                                    .toUpperCase()
-                                                    .replace(/AT/gi, "@");
-
-                                                // TIME (handles spaces automatically)
-                                                const timeMatch =
-                                                    cleaned.match(
-                                                        /(\d+)\s*HRS?/i,
-                                                    );
-
-                                                // TEMP (handles: 125'C, 125' C, 125C, +135'C)
-                                                const tempMatch =
-                                                    cleaned.match(
-                                                        /(\+?\d+)\s*'?\s*C/i,
-                                                    );
-
-                                                // fallback kung baliktad format
-                                                if (!timeMatch || !tempMatch) {
-                                                    const reverse =
-                                                        cleaned.match(
-                                                            /(\+?\d+)\s*'?\s*C.*?(\d+)\s*HRS?/i,
-                                                        );
-
-                                                    if (reverse) {
-                                                        return {
-                                                            time: reverse[2],
-                                                            temp: reverse[1],
-                                                        };
-                                                    }
-                                                }
-
-                                                if (!timeMatch || !tempMatch)
-                                                    return null;
-
-                                                return {
-                                                    time: timeMatch[1],
-                                                    temp: tempMatch[1],
-                                                };
-                                            })
-                                            .filter(Boolean);
-
-                                        if (parsed.length === 1) {
-                                            // SINGLE VALUE MODE
-                                            setData("time", parsed[0].time);
-                                            setData(
-                                                "temperature",
-                                                parsed[0].temp,
-                                            );
-
-                                            setTimeOptions([]);
-                                            setTempOptions([]);
-                                        } else if (parsed.length > 1) {
-                                            // MULTIPLE MODE (SELECT MODE)
-                                            setTimeOptions([
-                                                ...new Set(
-                                                    parsed.map((p) => p.time),
-                                                ),
-                                            ]);
-                                            setTempOptions([
-                                                ...new Set(
-                                                    parsed.map((p) => p.temp),
-                                                ),
-                                            ]);
-
-                                            setData("time", "");
-                                            setData("temperature", "");
-                                        } else {
-                                            // fallback
-                                            setData("time", "");
-                                            setData("temperature", "");
-                                            setTimeOptions([]);
-                                            setTempOptions([]);
-                                        }
-                                    } else {
-                                        setData("partname", "");
-                                        setData("package", "");
-                                        setData("qty", "");
-                                        setData("temperature", "");
-                                        setData("time", "");
-                                        setTimeOptions([]);
-                                        setTempOptions([]);
+                                    if (!value) {
+                                        setLotSuggestions([]);
+                                        return;
                                     }
+
+                                    // debounce — fetch after 400ms ng pag-type
+                                    lotDebounceRef.current = setTimeout(
+                                        async () => {
+                                            setLotLoading(true);
+                                            try {
+                                                const res = await fetch(
+                                                    route(
+                                                        "dry-bake.search-lot",
+                                                    ) +
+                                                        `?lot_id=${encodeURIComponent(value)}`,
+                                                );
+                                                const json = await res.json();
+                                                setLotSuggestions(json);
+                                            } catch {
+                                                setLotSuggestions([]);
+                                            } finally {
+                                                setLotLoading(false);
+                                            }
+                                        },
+                                        400,
+                                    );
                                 }}
                             />
+
+                            {/* Suggestions dropdown */}
+                            {(lotSuggestions.length > 0 || lotLoading) && (
+                                <div className="absolute top-full mt-1 w-full bg-white border rounded shadow max-h-48 overflow-y-auto z-10">
+                                    {lotLoading && (
+                                        <div className="p-2 text-gray-400 text-sm">
+                                            Searching...
+                                        </div>
+                                    )}
+                                    {!lotLoading &&
+                                        lotSuggestions.map((item, i) => (
+                                            <div
+                                                key={i}
+                                                className="p-2 hover:bg-blue-50 cursor-pointer text-gray-600 text-sm"
+                                                onClick={() => {
+                                                    setData(
+                                                        "lotid",
+                                                        item.Lot_Id,
+                                                    );
+                                                    setLotSuggestions([]);
+
+                                                    // same logic mo dati sa autofill
+                                                    setData(
+                                                        "partname",
+                                                        item.Part_Name || "",
+                                                    );
+                                                    setData(
+                                                        "package",
+                                                        item.Package_Name || "",
+                                                    );
+                                                    setData(
+                                                        "qty",
+                                                        item.Qty || "",
+                                                    );
+
+                                                    const bake =
+                                                        item.Bake_Time_Temp ||
+                                                        "";
+                                                    const options = bake
+                                                        .split(/OR/i)
+                                                        .map((s) => s.trim());
+                                                    const parsed = options
+                                                        .map((opt) => {
+                                                            if (!opt)
+                                                                return null;
+                                                            const cleaned = opt
+                                                                .toUpperCase()
+                                                                .replace(
+                                                                    /AT/gi,
+                                                                    "@",
+                                                                );
+                                                            const timeMatch =
+                                                                cleaned.match(
+                                                                    /(\d+)\s*HRS?/i,
+                                                                );
+                                                            const tempMatch =
+                                                                cleaned.match(
+                                                                    /(\+?\d+)\s*'?\s*C/i,
+                                                                );
+                                                            if (
+                                                                !timeMatch ||
+                                                                !tempMatch
+                                                            ) {
+                                                                const reverse =
+                                                                    cleaned.match(
+                                                                        /(\+?\d+)\s*'?\s*C.*?(\d+)\s*HRS?/i,
+                                                                    );
+                                                                if (reverse)
+                                                                    return {
+                                                                        time: reverse[2],
+                                                                        temp: reverse[1],
+                                                                    };
+                                                                return null;
+                                                            }
+                                                            return {
+                                                                time: timeMatch[1],
+                                                                temp: tempMatch[1],
+                                                            };
+                                                        })
+                                                        .filter(Boolean);
+
+                                                    if (parsed.length === 1) {
+                                                        setData(
+                                                            "time",
+                                                            parsed[0].time,
+                                                        );
+                                                        setData(
+                                                            "temperature",
+                                                            parsed[0].temp,
+                                                        );
+                                                        setTimeOptions([]);
+                                                        setTempOptions([]);
+                                                    } else if (
+                                                        parsed.length > 1
+                                                    ) {
+                                                        setTimeOptions([
+                                                            ...new Set(
+                                                                parsed.map(
+                                                                    (p) =>
+                                                                        p.time,
+                                                                ),
+                                                            ),
+                                                        ]);
+                                                        setTempOptions([
+                                                            ...new Set(
+                                                                parsed.map(
+                                                                    (p) =>
+                                                                        p.temp,
+                                                                ),
+                                                            ),
+                                                        ]);
+                                                        setData("time", "");
+                                                        setData(
+                                                            "temperature",
+                                                            "",
+                                                        );
+                                                    } else {
+                                                        setData("time", "");
+                                                        setData(
+                                                            "temperature",
+                                                            "",
+                                                        );
+                                                        setTimeOptions([]);
+                                                        setTempOptions([]);
+                                                    }
+                                                }}
+                                            >
+                                                <span className="font-medium">
+                                                    {item.Lot_Id}
+                                                </span>
+                                                <span className="text-gray-400 ml-2 text-xs">
+                                                    {item.Part_Name} —{" "}
+                                                    {item.Package_Name}
+                                                </span>
+                                            </div>
+                                        ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* PART NAME */}

@@ -16,6 +16,7 @@ Route::prefix($app_name)->middleware(AuthMiddleware::class)->group(function () {
 
   Route::get('/dry-bake', [DryBakeController::class, 'index'])->name('dry-bake.index');
   // Route::post('/dry-bake/store', [DryBakeController::class, 'store'])->name('dry-bake.bulk-store');
+  Route::get('/dry-bake/search-lot', [DryBakeController::class, 'searchLot'])->name('dry-bake.search-lot');
   Route::get('/dry-bake/interrupted', [DryBakeController::class, 'interrupted'])->name('dry-bake.interrupted');
   Route::post('/dry-bake/bulk', [DryBakeController::class, 'bulkStore'])
     ->name('dry-bake.bulk-store');

@@ -1,7 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { router, Head } from "@inertiajs/react";
 import DataTable from "@/Components/DataTable";
-import { ListTree, X } from "lucide-react";
+import { ListTree, X, Eye } from "lucide-react";
 import { useState, useEffect, usePage } from "react";
 import { Button } from "@/Components/ui/button";
 import BakeModal from "@/Pages/LogsheetForms/BakeModal";
@@ -252,7 +252,7 @@ export default function Bakeforms({
                 onClick={() => handleView(item.oven_num)}
                 className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
             >
-                <i className="fa fa-eye"></i>
+                <Eye className="w-4 h-4" />
             </button>
         ),
     }));

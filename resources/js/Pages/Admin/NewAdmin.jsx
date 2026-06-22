@@ -2,8 +2,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router } from "@inertiajs/react";
 import DataTable from "@/Components/DataTable";
 import Modal from "@/Components/Modal";
-
 import { useState } from "react";
+import { UsersRound } from "lucide-react";
 
 export default function NewAdmin({ tableData, tableFilters, emp_data }) {
     const [role, setRole] = useState(null);
@@ -33,8 +33,8 @@ export default function NewAdmin({ tableData, tableFilters, emp_data }) {
             <Head title="Manage Administrators" />
 
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold text-blue-700 hover:text-blue-800">
-                    <i className="fa-solid fa-users-between-lines"></i> Employee List
+                <h1 className="flex items-center text-2xl font-bold text-blue-700 hover:text-blue-800">
+                    <UsersRound className="w-6 h-6 mr-2" /> Employee List
                 </h1>
             </div>
 

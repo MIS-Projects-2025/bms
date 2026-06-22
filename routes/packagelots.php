@@ -15,6 +15,8 @@ Route::prefix($app_name)->middleware(AuthMiddleware::class)->group(function () {
     Route::get("/packagelots", [PackageLotsController::class, 'index'])->name('partnames.index');
   });
 
+
+
   Route::get("/packagelots/history", [PackageLotsController::class, 'history'])->name('package.history.index');
 
   Route::get('/package-history/timeline', [PackageLotsController::class, 'timeline'])

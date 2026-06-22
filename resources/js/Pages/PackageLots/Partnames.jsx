@@ -5,6 +5,7 @@ import Modal from "@/Components/Modal";
 import { useState } from "react";
 import { Button } from "@/Components/ui/button";
 import { Label } from "@/Components/ui/label";
+import { ListTodo } from "lucide-react";
 
 export default function Partnames({ tableData, tableFilters, emp_data }) {
 
@@ -13,8 +14,8 @@ export default function Partnames({ tableData, tableFilters, emp_data }) {
             <Head title="Partname List" />
 
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold text-blue-800 hover:text-blue-900">
-                    <i className="fa-solid fa-list"></i> Partname List
+                <h1 className="flex items-center text-2xl font-bold text-blue-800 hover:text-blue-900">
+                    <ListTodo className="w-6 h-6 mr-2" /> Partname List
                 </h1>
             </div>
 

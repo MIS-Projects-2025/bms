@@ -1,10 +1,26 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, usePage, router } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import DataTable from "@/Components/DataTable";
 import Modal from "@/Components/Modal";
 import { useState } from "react";
+
 import { Button } from "@/Components/ui/button";
-import { Label } from "@/Components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select";
+
+import {
+    UserRoundPlus,
+    UsersRound,
+    UserCircle2,
+    ShieldCheck,
+    Pencil,
+    Trash2,
+} from "lucide-react";
 
 export default function Admin({ tableData, tableFilters, emp_data }) {
     const [role, setRole] = useState(null);
@@ -23,7 +39,7 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                     console.log("Admin removed");
                     window.location.reload(); // Refresh the page after removal
                 },
-            }
+            },
         );
     }
 
@@ -38,7 +54,7 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                 onSuccess: () => {
                     console.log("Admin role changed");
                 },
-            }
+            },
         );
     }
 
@@ -52,17 +68,22 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
             <Head title="Manage Admin" />
 
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold text-blue-800 hover:text-blue-900">
-                    <i className="fa-solid fa-users"></i> Administrator`s
+                <h1 className="flex items-center gap-2 text-2xl font-bold">
+                    <UsersRound className="h-6 w-6" />
+                    Administrators
                 </h1>
 
                 <Button
-
                     onClick={() =>
-                        router.get(route("index_addAdmin"), {}, { preserveScroll: true })
+                        router.get(
+                            route("index_addAdmin"),
+                            {},
+                            { preserveScroll: true },
+                        )
                     }
                 >
-                    <i className="fa-solid fa-user-plus"></i> New Admin
+                    <UserRoundPlus className="h-4 w-4 mr-2" />
+                    New Admin
                 </Button>
             </div>
 
@@ -89,7 +110,7 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                 {(row, close) => (
                     <Modal
                         id="RowModal"
-                        icon="<i className='fa-solid fa-users-gear mr-2 text-blue-600'></i>"
+                        icon={<UsersRound className="h-5 w-5 text-primary" />}
                         title="Employee Details"
                         show={true}
                         onClose={() => tableModalClose(close)}
@@ -98,18 +119,22 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                         <div className="space-y-4">
                             {/* User Info */}
                             <div className="text-center">
-                                <div className="text-4xl text-blue-800 mb-2">
-                                    <i className="fa-solid fa-user-circle"></i>
+                                <div className="flex justify-center mb-3">
+                                    <UserCircle2 className="h-16 w-16 text-primary" />
                                 </div>
                                 <h2 className="text-xl font-bold text-gray-800 dark:text-gray-800">
                                     {row.emp_name}
                                 </h2>
                                 <p className="text-sm text-gray-500 dark:text-gray-800">
-                                    ID: <span className="font-semibold">{row.emp_id}</span>
+                                    ID:{" "}
+                                    <span className="font-semibold">
+                                        {row.emp_id}
+                                    </span>
                                 </p>
                                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-800">
                                     Current Role:{" "}
-                                    <span className="font-semibold text-blue-800 dark:text-blue-600">
+                                    <span className="inline-flex items-center gap-1 font-semibold text-primary">
+                                        <ShieldCheck className="h-4 w-4" />
                                         {row.emp_role}
                                     </span>
                                 </p>
@@ -123,39 +148,52 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
 
                             {["superadmin", "admin"].includes(Adminrole) && (
                                 <div className="mt-6 space-y-4">
-
                                     <label className="block text-sm font-semibold text-gray-700">
                                         Update Role
                                     </label>
 
-                                    <select
+                                    <Select
                                         defaultValue={row.emp_role}
-                                        onChange={(e) => setRole(e.target.value)}
-                                        className="w-full rounded-lg border p-2 text-gray-700"
+                                        onValueChange={(value) =>
+                                            setRole(value)
+                                        }
                                     >
-                                        <option value="admin">Admin</option>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Role" />
+                                        </SelectTrigger>
 
-                                        {Adminrole === "superadmin" && (
-                                            <option value="superadmin">Superadmin</option>
-                                        )}
-                                    </select>
+                                        <SelectContent>
+                                            <SelectItem value="admin">
+                                                Admin
+                                            </SelectItem>
+
+                                            {Adminrole === "superadmin" && (
+                                                <SelectItem value="superadmin">
+                                                    Superadmin
+                                                </SelectItem>
+                                            )}
+                                        </SelectContent>
+                                    </Select>
 
                                     <div className="flex justify-end gap-3 pt-3">
-
-                                        <button
-                                            onClick={() => changeRole(row.emp_id)}
-                                            className="px-4 py-2 bg-indigo-600 text-white rounded"
+                                        <Button
+                                            onClick={() =>
+                                                changeRole(row.emp_id)
+                                            }
                                         >
-                                            <i className="fa-solid fa-pen-to-square"></i> Update Role
-                                        </button>
+                                            <Pencil className="h-4 w-4 mr-2" />
+                                            Update Role
+                                        </Button>
 
-                                        <button
-                                            onClick={() => removeAdmin(row.emp_id)}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded"
+                                        <Button
+                                            variant="destructive"
+                                            onClick={() =>
+                                                removeAdmin(row.emp_id)
+                                            }
                                         >
-                                            <i className="fa-solid fa-trash"></i> Remove
-                                        </button>
-
+                                            <Trash2 className="h-4 w-4 mr-2" />
+                                            Remove
+                                        </Button>
                                     </div>
                                 </div>
                             )}
