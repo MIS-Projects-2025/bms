@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+import { X } from "lucide-react";
+
 export default function Modal({
     show,
     title,
@@ -35,7 +37,6 @@ export default function Modal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
-            
             {/* MODAL BOX */}
             <div
                 className={`w-full ${sizeClasses[size]} bg-white rounded-2xl shadow-2xl overflow-hidden animate-fadeIn`}
@@ -50,7 +51,7 @@ export default function Modal({
                         onClick={onClose}
                         className="text-white transition hover:scale-110"
                     >
-                        <i className="text-lg fa-solid fa-xmark"></i>
+                        <X className="w-5 h-5"/>
                     </button>
                 </div>
 

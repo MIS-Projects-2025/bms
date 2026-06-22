@@ -184,9 +184,9 @@ export default function PackageHistory({ tableData, tableFilters, emp_data }) {
             <Head title="Package History" />
 
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold text-sky-800 hover:text-sky-600">
-                    <i className="fa-solid fa-clock-rotate-left"></i> Package
-                    History
+                <h1 className="flex items-center text-2xl font-bold text-sky-800 hover:text-sky-600">
+                    <FileClock className="w-6 h-6"/>
+                    Package History
                 </h1>
             </div>
 

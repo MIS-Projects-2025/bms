@@ -1,7 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router } from "@inertiajs/react";
 import DataTable from "@/Components/DataTable";
-import { ArchiveRestore, CircleX, SaveAll, BookAlert } from "lucide-react";
+import { ArchiveRestore, CircleX, SaveAll, BookAlert, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function OvenListStatus({ tableData, tableFilters }) {
@@ -138,7 +138,7 @@ const getStatusBadge = (status) => {
             }}
             className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
         >
-            <i className="fa fa-eye"></i>
+            <Eye className="w-4 h-4" />
         </button>
     ),
 }));
@@ -190,7 +190,7 @@ const getStatusBadge = (status) => {
                                 Oven Details
                             </h2>
 
-                            
+
 
                             {/* REAL SWITCH */}
 <div className="flex items-center gap-3">
@@ -251,7 +251,7 @@ const getStatusBadge = (status) => {
                             />
                         </div>
 
-                        
+
 
                         {/* BUTTONS */}
                         <div className="flex justify-end gap-2">

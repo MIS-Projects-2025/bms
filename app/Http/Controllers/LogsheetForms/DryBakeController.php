@@ -13,49 +13,52 @@ use Carbon\Carbon;
 
 class DryBakeController extends Controller
 {
-    public function index()
-    {
+   public function index()
+{
+    $chambers = DB::connection('mysql')->table('oven_status')
+        ->where('status', '!=', 'shutdown')
+        ->get()
+        ->map(fn($item) => [
+            'oven_name' => $item->oven_name,
+            'chamber'   => $item->chamber,
+        ])
+        ->values();
 
-        $packageLots = DB::connection('ppc')->table('customer_data_wip')
-            ->selectRaw('
-        TRIM(Lot_Id) as Lot_Id,
-        TRIM(Part_Name) as Part_Name,
-        TRIM(Package_Name) as Package_Name,
-        Qty,
-        Bake_Time_Temp
-    ')
+    $ovens = DB::connection('mysql')->table('oven_status')
+        ->where('status', '!=', 'shutdown')
+        ->pluck('oven_name');
 
-            ->groupBy('Lot_Id', 'Part_Name', 'Package_Name', 'Qty', 'Bake_Time_Temp')
-            ->get();
+    // ✅ packageLots ay wala na dito — fetch na lang on demand
+    return Inertia::render('LogsheetForms/DryBakeForm', [
+        'chambers' => $chambers,
+        'ovens'    => $ovens,
+    ]);
+}
 
-        $chambers = DB::connection('mysql')->table('oven_status')
-            ->where('status', '!=', 'shutdown')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'oven_name' => $item->oven_name,
-                    'chamber' => $item->chamber,
-                ];
-            })
-            ->values();
+// Bagong endpoint — tinatawag lang kapag may lot_id
+public function searchLot(Request $request)
+{
+    $lotId = trim($request->query('lot_id', ''));
 
-        // $ovens = DB::connection('server25')
-        //     ->table('machine_non_tnr_list')
-        //     ->whereIn('remarks', ['ACTIVE', 'active', 'Active'])
-        //     ->where('machine_name', 'like', '%oven%')
-        //     ->pluck('machine_num'); // 🔥 important
-
-        $ovens = DB::connection('mysql')
-            ->table('oven_status')
-            ->where('status', '!=', 'shutdown')
-            ->pluck('oven_name');
-
-        return Inertia::render('LogsheetForms/DryBakeForm', [
-            'chambers' => $chambers,
-            'ovens' => $ovens,
-            'packageLots' => $packageLots,
-        ]);
+    if (!$lotId) {
+        return response()->json([]);
     }
+
+    $results = DB::connection('ppc')->table('customer_data_wip')
+        ->selectRaw('
+            TRIM(Lot_Id)       as Lot_Id,
+            TRIM(Part_Name)    as Part_Name,
+            TRIM(Package_Name) as Package_Name,
+            Qty,
+            Bake_Time_Temp
+        ')
+        ->where('Lot_Id', 'like', "%{$lotId}%")
+        ->groupBy('Lot_Id', 'Part_Name', 'Package_Name', 'Qty', 'Bake_Time_Temp')
+        ->limit(20) // para hindi bumagsak ang query
+        ->get();
+
+    return response()->json($results);
+}
 
     public function store(Request $request)
     {
