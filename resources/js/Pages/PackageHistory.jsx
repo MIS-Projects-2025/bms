@@ -291,11 +291,10 @@ export default function PackageHistory({ tableData, tableFilters, emp_data }) {
                                             >
                                                 <TableCell className="px-2 sm:px-3 py-2 whitespace-nowrap">
                                                     <Badge
-                                                        className={`text-white uppercase font-bold ${
-                                                            statusColors[
-                                                                status
-                                                            ] || "bg-sky-800"
-                                                        }`}
+                                                        className={`text-white uppercase font-bold ${statusColors[
+                                                            status
+                                                        ] || "bg-sky-800"
+                                                            }`}
                                                     >
                                                         {row.bake_status}
                                                     </Badge>
@@ -312,8 +311,8 @@ export default function PackageHistory({ tableData, tableFilters, emp_data }) {
                                                     const previous =
                                                         index > 0
                                                             ? timelineData[
-                                                                  index - 1
-                                                              ][key]
+                                                            index - 1
+                                                            ][key]
                                                             : null;
 
                                                     const isEmpty =
@@ -326,20 +325,20 @@ export default function PackageHistory({ tableData, tableFilters, emp_data }) {
                                                         previous !== null &&
                                                         previous !== "" &&
                                                         previous !==
-                                                            undefined &&
+                                                        undefined &&
                                                         previous != value;
 
                                                     const displayValue = isEmpty
                                                         ? "-"
                                                         : key.includes("date")
-                                                          ? formatDate(value)
-                                                          : String(value);
+                                                            ? formatDate(value)
+                                                            : String(value);
 
                                                     const previousDisplay =
                                                         key.includes("date")
                                                             ? formatDate(
-                                                                  previous,
-                                                              )
+                                                                previous,
+                                                            )
                                                             : String(previous);
 
                                                     return (
@@ -350,11 +349,10 @@ export default function PackageHistory({ tableData, tableFilters, emp_data }) {
                                                                     ? `Changed from: ${previousDisplay}`
                                                                     : undefined
                                                             }
-                                                            className={`px-2 sm:px-3 py-2 break-words align-top ${
-                                                                changed
-                                                                    ? "bg-emerald-100 text-emerald-800 font-semibold"
-                                                                    : "text-gray-700"
-                                                            }`}
+                                                            className={`px-2 sm:px-3 py-2 break-words align-top ${changed
+                                                                ? "bg-emerald-100 text-emerald-800 font-semibold"
+                                                                : "text-gray-700"
+                                                                }`}
                                                         >
                                                             {displayValue}
                                                         </TableCell>

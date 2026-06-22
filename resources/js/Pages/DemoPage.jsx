@@ -57,7 +57,7 @@ export default function DemoPage({ tableData, tableFilters }) {
                         { value: "moderator", label: "Moderator" },
                     ],
                 }}
-                // DROPDOWN FILTER
+            // DROPDOWN FILTER
             >
                 {(row, close) => (
                     <Modal

@@ -1,6 +1,6 @@
 import { usePage } from "@inertiajs/react";
-import SidebarLink from "@/Components/sidebar/SidebarLink";
-import {FileSpreadsheet, LayoutDashboard , Users , SquareStack, BookCopy, ListTree, List, FileClock, Settings } from "lucide-react";
+import SidebarLink from "@/Components/Sidebar/SidebarLink";
+import { FileSpreadsheet, LayoutDashboard, Users, SquareStack, BookCopy, ListTree, List, FileClock, Settings } from "lucide-react";
 import Dropdown from "./DropDown";
 
 export default function NavLinks({ isSidebarOpen }) {

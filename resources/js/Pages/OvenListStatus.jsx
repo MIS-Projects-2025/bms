@@ -57,43 +57,43 @@ export default function OvenListStatus({ tableData, tableFilters }) {
     | SAVE
     |--------------------------------------------------
     */
-const handleSave = () => {
-    const status = isOn ? "idle" : "shutdown";
+    const handleSave = () => {
+        const status = isOn ? "idle" : "shutdown";
 
-    router.put(route("ovenlist.update", selectedItem.id), {
-        chamber: form.chamber,
-        status,
-    });
+        router.put(route("ovenlist.update", selectedItem.id), {
+            chamber: form.chamber,
+            status,
+        });
 
-    setOpenModal(false);
-};
+        setOpenModal(false);
+    };
 
-const getStatusBadge = (status) => {
-    const base = "px-3 py-1 rounded-full text-xs font-bold capitalize";
+    const getStatusBadge = (status) => {
+        const base = "px-3 py-1 rounded-full text-xs font-bold capitalize";
 
-    switch ((status || "").toLowerCase()) {
-        case "idle":
-            return `${base} bg-gray-200 text-gray-800 dark:bg-gray-100/20 dark:text-gray-400`;
+        switch ((status || "").toLowerCase()) {
+            case "idle":
+                return `${base} bg-gray-200 text-gray-800 dark:bg-gray-100/20 dark:text-gray-400`;
 
-        case "shutdown":
-            return `${base} bg-blue-300 text-blue-800 dark:bg-blue-100/20 dark:text-blue-400`;
+            case "shutdown":
+                return `${base} bg-blue-300 text-blue-800 dark:bg-blue-100/20 dark:text-blue-400`;
 
-        case "inuse":
-            return `${base} bg-green-200 text-green-800 dark:bg-green-100/20 dark:text-green-400`;
+            case "inuse":
+                return `${base} bg-green-200 text-green-800 dark:bg-green-100/20 dark:text-green-400`;
 
-        case "unloading":
-            return `${base} bg-red-200 text-red-800 animate-pulse dark:bg-red-100/20 dark:text-red-400`;
+            case "unloading":
+                return `${base} bg-red-200 text-red-800 animate-pulse dark:bg-red-100/20 dark:text-red-400`;
 
-        case "before_unload":
-            return `${base} bg-orange-200 text-orange-800 dark:bg-orange-100/20 dark:text-orange-400`;
+            case "before_unload":
+                return `${base} bg-orange-200 text-orange-800 dark:bg-orange-100/20 dark:text-orange-400`;
 
-        case "interupted":
-            return `${base} bg-gray-200 text-gray-800 dark:bg-gray-100/20 dark:text-gray-400`;
+            case "interupted":
+                return `${base} bg-gray-200 text-gray-800 dark:bg-gray-100/20 dark:text-gray-400`;
 
-        default:
-            return `${base} bg-stone-200 text-stone-800 dark:bg-stone-100/20 dark:text-stone-400`;
-    }
-};
+            default:
+                return `${base} bg-stone-200 text-stone-800 dark:bg-stone-100/20 dark:text-stone-400`;
+        }
+    };
 
     /*
     |--------------------------------------------------
@@ -101,47 +101,47 @@ const getStatusBadge = (status) => {
     |--------------------------------------------------
     */
     const dataWithAction = tableData.data.map((item) => ({
-    ...item,
+        ...item,
 
-    chamber: Array.isArray(item.chamber)
-        ? item.chamber.map((c) => c.toUpperCase()).join(" | ")
-        : item.chamber,
+        chamber: Array.isArray(item.chamber)
+            ? item.chamber.map((c) => c.toUpperCase()).join(" | ")
+            : item.chamber,
 
-    status: (
-        <span className={getStatusBadge(item.status)}>
-            {item.status}
-        </span>
-    ),
+        status: (
+            <span className={getStatusBadge(item.status)}>
+                {item.status}
+            </span>
+        ),
 
-    actions: (
-        <button
-            onClick={() => {
-                let parsedSections = [];
+        actions: (
+            <button
+                onClick={() => {
+                    let parsedSections = [];
 
-                try {
-                    parsedSections =
-                        typeof item.sections === "string"
-                            ? JSON.parse(item.sections)
-                            : Array.isArray(item.sections)
-                            ? item.sections
-                            : [];
-                } catch {
-                    parsedSections = [];
-                }
+                    try {
+                        parsedSections =
+                            typeof item.sections === "string"
+                                ? JSON.parse(item.sections)
+                                : Array.isArray(item.sections)
+                                    ? item.sections
+                                    : [];
+                    } catch {
+                        parsedSections = [];
+                    }
 
-                setSelectedItem({
-                    ...item,
-                    sections: parsedSections,
-                });
+                    setSelectedItem({
+                        ...item,
+                        sections: parsedSections,
+                    });
 
-                setOpenModal(true);
-            }}
-            className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-            <i className="fa fa-eye"></i>
-        </button>
-    ),
-}));
+                    setOpenModal(true);
+                }}
+                className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
+            >
+                <i className="fa fa-eye"></i>
+            </button>
+        ),
+    }));
 
     return (
         <AuthenticatedLayout>
@@ -190,31 +190,28 @@ const getStatusBadge = (status) => {
                                 Oven Details
                             </h2>
 
-                            
+
 
                             {/* REAL SWITCH */}
-<div className="flex items-center gap-3">
-    <span
-        className={`text-sm font-semibold transition ${
-            isOn ? "text-green-600" : "text-red-600"
-        }`}
-    >
-        {isOn ? "ON" : "OFF"}
-    </span>
+                            <div className="flex items-center gap-3">
+                                <span
+                                    className={`text-sm font-semibold transition ${isOn ? "text-green-600" : "text-red-600"
+                                        }`}
+                                >
+                                    {isOn ? "ON" : "OFF"}
+                                </span>
 
-    <div
-        onClick={handleToggle}
-        className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer transition-all duration-300 shadow-inner ${
-            isOn ? "bg-green-500" : "bg-red-500"
-        }`}
-    >
-        <div
-            className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-all duration-300 ${
-                isOn ? "translate-x-7" : "translate-x-0"
-            }`}
-        />
-    </div>
-</div>
+                                <div
+                                    onClick={handleToggle}
+                                    className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer transition-all duration-300 shadow-inner ${isOn ? "bg-green-500" : "bg-red-500"
+                                        }`}
+                                >
+                                    <div
+                                        className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-all duration-300 ${isOn ? "translate-x-7" : "translate-x-0"
+                                            }`}
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         {/* OVEN NAME (READONLY) */}
@@ -251,7 +248,7 @@ const getStatusBadge = (status) => {
                             />
                         </div>
 
-                        
+
 
                         {/* BUTTONS */}
                         <div className="flex justify-end gap-2">

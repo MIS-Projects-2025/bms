@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ConfigProvider, theme as antdTheme } from "antd";
-import { ThemeProvider, ThemeContext } from "../js/Components/ThemeContext";
+import { ThemeProvider, ThemeContext } from "./Components/ThemeContext";
 
 import { Toaster } from "sonner"; // ✅ ADD THIS
 

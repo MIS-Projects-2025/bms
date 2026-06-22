@@ -56,14 +56,14 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                     <i className="fa-solid fa-users"></i> Administrator`s
                 </h1>
 
-                    <Button
+                <Button
 
-                        onClick={() =>
-                            router.get(route("index_addAdmin"), {}, { preserveScroll: true })
-                        }
-                    >
-                        <i className="fa-solid fa-user-plus"></i> New Admin
-                    </Button>
+                    onClick={() =>
+                        router.get(route("index_addAdmin"), {}, { preserveScroll: true })
+                    }
+                >
+                    <i className="fa-solid fa-user-plus"></i> New Admin
+                </Button>
             </div>
 
             <DataTable
@@ -122,43 +122,43 @@ export default function Admin({ tableData, tableFilters, emp_data }) {
                             </div>
 
                             {["superadmin", "admin"].includes(Adminrole) && (
-    <div className="mt-6 space-y-4">
+                                <div className="mt-6 space-y-4">
 
-        <label className="block text-sm font-semibold text-gray-700">
-            Update Role
-        </label>
+                                    <label className="block text-sm font-semibold text-gray-700">
+                                        Update Role
+                                    </label>
 
-        <select
-            defaultValue={row.emp_role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full rounded-lg border p-2 text-gray-700"
-        >
-            <option value="admin">Admin</option>
+                                    <select
+                                        defaultValue={row.emp_role}
+                                        onChange={(e) => setRole(e.target.value)}
+                                        className="w-full rounded-lg border p-2 text-gray-700"
+                                    >
+                                        <option value="admin">Admin</option>
 
-            {Adminrole === "superadmin" && (
-                <option value="superadmin">Superadmin</option>
-            )}
-        </select>
+                                        {Adminrole === "superadmin" && (
+                                            <option value="superadmin">Superadmin</option>
+                                        )}
+                                    </select>
 
-        <div className="flex justify-end gap-3 pt-3">
+                                    <div className="flex justify-end gap-3 pt-3">
 
-            <button
-                onClick={() => changeRole(row.emp_id)}
-                className="px-4 py-2 bg-indigo-600 text-white rounded"
-            >
-               <i className="fa-solid fa-pen-to-square"></i> Update Role
-            </button>
+                                        <button
+                                            onClick={() => changeRole(row.emp_id)}
+                                            className="px-4 py-2 bg-indigo-600 text-white rounded"
+                                        >
+                                            <i className="fa-solid fa-pen-to-square"></i> Update Role
+                                        </button>
 
-            <button
-                onClick={() => removeAdmin(row.emp_id)}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-            >
-               <i className="fa-solid fa-trash"></i> Remove
-            </button>
+                                        <button
+                                            onClick={() => removeAdmin(row.emp_id)}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded"
+                                        >
+                                            <i className="fa-solid fa-trash"></i> Remove
+                                        </button>
 
-        </div>
-    </div>
-)}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </Modal>
                 )}

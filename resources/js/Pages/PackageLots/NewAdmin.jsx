@@ -109,8 +109,8 @@ export default function NewAdmin({ tableData, tableFilters, emp_data }) {
                                         <option value="superadmin">Superadmin</option>
                                     )}
                                     {["superadmin", "admin"].includes(emp_data?.emp_system_role) && (
-                                                <option value="admin">Admin</option>
-                                            )}
+                                        <option value="admin">Admin</option>
+                                    )}
                                 </select>
                             </div>
 

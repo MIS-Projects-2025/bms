@@ -56,12 +56,12 @@ function ChamberModal({ ovenName, chambers, now, onClose, onCooldown, onComplete
                 {/* Chamber list */}
                 <div className="overflow-y-auto p-5 space-y-3">
                     {chambers.map((ch, idx) => {
-                        const end               = new Date(ch.end);
-                        const remaining         = Math.floor((end - now) / 1000);
-                        const cooldownEnd       = ch.cooldown_end ? new Date(ch.cooldown_end) : null;
+                        const end = new Date(ch.end);
+                        const remaining = Math.floor((end - now) / 1000);
+                        const cooldownEnd = ch.cooldown_end ? new Date(ch.cooldown_end) : null;
                         const cooldownRemaining = cooldownEnd ? Math.floor((cooldownEnd - now) / 1000) : null;
-                        const isCoolingDown     = cooldownEnd && cooldownRemaining > 0;
-                        const isCooldownDone    = cooldownEnd && cooldownRemaining <= 0;
+                        const isCoolingDown = cooldownEnd && cooldownRemaining > 0;
+                        const isCooldownDone = cooldownEnd && cooldownRemaining <= 0;
 
                         return (
                             <div key={idx} className={`p-3 rounded border ${getChamberColor(remaining, ch.status)}`}>
@@ -110,14 +110,14 @@ export default function OvenList() {
     const role = emp_data?.emp_system_role?.toLowerCase().trim();
     const { ovenList, ovenDetails, ovenStatus, bakePackageDetails } = usePage().props;
 
-    const alarmRef     = useRef(null);
+    const alarmRef = useRef(null);
     const triggeredRef = useRef({});
 
-    const [now, setNow]             = useState(new Date());
+    const [now, setNow] = useState(new Date());
     const [actualTemps, setActualTemps] = useState({});
-    const [dropTimers, setDropTimers]   = useState({});
-    const dropTimersRef                 = useRef({});
-    const savingRef                     = useRef({});
+    const [dropTimers, setDropTimers] = useState({});
+    const dropTimersRef = useRef({});
+    const savingRef = useRef({});
 
     // Toast notification
     const [toast, setToast] = useState(null); // { message, type }
@@ -132,13 +132,13 @@ export default function OvenList() {
     }, [flash]);
 
     // Modal states
-    const [addTimeModal, setAddTimeModal]   = useState(false);
-    const [selectedOven, setSelectedOven]   = useState(null);
-    const [timeInput, setTimeInput]         = useState({ hours: "", minutes: "", seconds: "" });
-    const [loadingId, setLoadingId]         = useState(null);
+    const [addTimeModal, setAddTimeModal] = useState(false);
+    const [selectedOven, setSelectedOven] = useState(null);
+    const [timeInput, setTimeInput] = useState({ hours: "", minutes: "", seconds: "" });
+    const [loadingId, setLoadingId] = useState(null);
 
     // Chamber detail modal
-    const [chamberModal, setChamberModal]   = useState(null); // ovenName | null
+    const [chamberModal, setChamberModal] = useState(null); // ovenName | null
 
     // ── Inertia reload ──────────────────────────────────────────────────────
     useEffect(() => {
@@ -164,7 +164,7 @@ export default function OvenList() {
             if (alarmRef.current) {
                 alarmRef.current.play()
                     .then(() => { alarmRef.current.pause(); alarmRef.current.currentTime = 0; })
-                    .catch(() => {});
+                    .catch(() => { });
             }
         };
         window.addEventListener("click", unlock, { once: true });
@@ -196,7 +196,7 @@ export default function OvenList() {
     useEffect(() => {
         ovenList.forEach((oven) => {
             const ovenName = oven.machine_num;
-            const status   = ovenStatus?.[ovenName]?.status || "idle";
+            const status = ovenStatus?.[ovenName]?.status || "idle";
             if (status !== "inuse") return;
 
             const activeChambers = ovenDetails.filter(
@@ -237,7 +237,7 @@ export default function OvenList() {
             // Confirmed recovered — compute elapsed directly from the ORIGINAL startedAt.
             // This is the single source of truth — same ref used for display.
             const elapsedMs = Date.now() - timerState.startedAt;
-            const elapsed    = Math.floor(elapsedMs / 1000);
+            const elapsed = Math.floor(elapsedMs / 1000);
 
             console.log(`[DropTimer] ${ovenName}: RECOVERED. startedAt=${new Date(timerState.startedAt).toLocaleTimeString()} now=${new Date().toLocaleTimeString()} elapsed=${elapsed}s`);
 
@@ -279,17 +279,17 @@ export default function OvenList() {
     useEffect(() => {
         let hasActiveAlarm = false;
         ovenDetails.forEach((ch) => {
-            const end          = new Date(ch.end);
+            const end = new Date(ch.end);
             const remainingSec = Math.floor((end - now) / 1000);
-            const key          = `${ch.oven}-${ch.chamber}`;
-            const isDone       = remainingSec <= 0;
-            const is30MinWarn  = remainingSec <= 1800 && remainingSec > 0;
-            const cooldownEnd       = ch.cooldown_end ? new Date(ch.cooldown_end) : null;
+            const key = `${ch.oven}-${ch.chamber}`;
+            const isDone = remainingSec <= 0;
+            const is30MinWarn = remainingSec <= 1800 && remainingSec > 0;
+            const cooldownEnd = ch.cooldown_end ? new Date(ch.cooldown_end) : null;
             const cooldownRemaining = cooldownEnd ? Math.floor((cooldownEnd - now) / 1000) : null;
 
             if (isDone && !cooldownEnd && !triggeredRef.current[`done-${key}`]) {
                 triggeredRef.current[`done-${key}`] = true;
-                if (alarmRef.current) { alarmRef.current.loop = true; alarmRef.current.play().catch(() => {}); }
+                if (alarmRef.current) { alarmRef.current.loop = true; alarmRef.current.play().catch(() => { }); }
             }
             if (is30MinWarn && !triggeredRef.current[`warn-${key}`]) {
                 triggeredRef.current[`warn-${key}`] = true;
@@ -299,7 +299,7 @@ export default function OvenList() {
             }
             if (cooldownEnd && cooldownRemaining <= 0 && !triggeredRef.current[`cool-${key}`]) {
                 triggeredRef.current[`cool-${key}`] = true;
-                if (alarmRef.current) { alarmRef.current.loop = true; alarmRef.current.play().catch(() => {}); }
+                if (alarmRef.current) { alarmRef.current.loop = true; alarmRef.current.play().catch(() => { }); }
             }
             if (isDone || (cooldownRemaining !== null && cooldownRemaining <= 0)) hasActiveAlarm = true;
         });
@@ -312,11 +312,11 @@ export default function OvenList() {
     // ── Helpers ─────────────────────────────────────────────────────────────
     const formatTime = (seconds) => {
         if (!seconds || seconds < 0) return "00:00:00";
-        const years   = Math.floor(seconds / (365 * 24 * 3600)); seconds %= 365 * 24 * 3600;
-        const days    = Math.floor(seconds / (24 * 3600));        seconds %= 24 * 3600;
-        const hours   = Math.floor(seconds / 3600);               seconds %= 3600;
+        const years = Math.floor(seconds / (365 * 24 * 3600)); seconds %= 365 * 24 * 3600;
+        const days = Math.floor(seconds / (24 * 3600)); seconds %= 24 * 3600;
+        const hours = Math.floor(seconds / 3600); seconds %= 3600;
         const minutes = Math.floor(seconds / 60);
-        const secs    = seconds % 60;
+        const secs = seconds % 60;
         if (years || days) return `${years ? years + "y " : ""}${days ? days + "d " : ""}${hours}h ${minutes}m ${secs}s`;
         return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
     };
@@ -324,37 +324,37 @@ export default function OvenList() {
     const getOvenCardColor = (ovenName) => {
         const status = ovenStatus?.[ovenName]?.status || "idle";
         switch (status) {
-            case "shutdown":  return "bg-blue-500/30 border-blue-600";
-            case "idle":      return "bg-gray-200/30 border-gray-400";
-            case "inuse":     return "bg-green-500/20 border-green-600";
+            case "shutdown": return "bg-blue-500/30 border-blue-600";
+            case "idle": return "bg-gray-200/30 border-gray-400";
+            case "inuse": return "bg-green-500/20 border-green-600";
             case "unloading": return "bg-red-500/20 border-red-600 animate-pulse";
-            case "cooldown":  return "bg-purple-500/20 border-purple-600 animate-pulse";
-            default:          return "bg-gray-100/30 border-gray-300";
+            case "cooldown": return "bg-purple-500/20 border-purple-600 animate-pulse";
+            default: return "bg-gray-100/30 border-gray-300";
         }
     };
 
     const getChamberColor = (remainingSec, status) => {
         if (status === "interrupted") return "bg-black/80 text-white";
-        if (status === "cooldown")    return "bg-purple-500/20 border-purple-500 animate-pulse";
-        const isDone  = remainingSec <= 0;
+        if (status === "cooldown") return "bg-purple-500/20 border-purple-500 animate-pulse";
+        const isDone = remainingSec <= 0;
         const is30Min = remainingSec <= 1800 && remainingSec > 0;
-        if (isDone)   return "bg-red-500 text-white animate-pulse";
-        if (is30Min)  return "bg-orange-400/30 border-orange-500";
+        if (isDone) return "bg-red-500 text-white animate-pulse";
+        if (is30Min) return "bg-orange-400/30 border-orange-500";
         switch (status) {
-            case "inuse":    return "bg-green-500/20 border-green-500";
+            case "inuse": return "bg-green-500/20 border-green-500";
             case "shutdown": return "bg-blue-500/20 border-blue-500";
-            default:         return "bg-gray-200/20 border-gray-400";
+            default: return "bg-gray-200/20 border-gray-400";
         }
     };
 
     // Classify a chamber as pending (cooldown/unload)
     const isPendingChamber = (d) => {
-        const end               = new Date(d.end);
-        const remaining         = Math.floor((end - now) / 1000);
-        const cooldownEnd       = d.cooldown_end ? new Date(d.cooldown_end) : null;
+        const end = new Date(d.end);
+        const remaining = Math.floor((end - now) / 1000);
+        const cooldownEnd = d.cooldown_end ? new Date(d.cooldown_end) : null;
         const cooldownRemaining = cooldownEnd ? Math.floor((cooldownEnd - now) / 1000) : null;
-        const isCoolingDown     = cooldownEnd && cooldownRemaining > 0;
-        const isCooldownDone    = cooldownEnd && cooldownRemaining <= 0;
+        const isCoolingDown = cooldownEnd && cooldownRemaining > 0;
+        const isCooldownDone = cooldownEnd && cooldownRemaining <= 0;
         return remaining <= 0 || isCoolingDown || isCooldownDone || d.status === "cooldown";
     };
 
@@ -428,13 +428,13 @@ export default function OvenList() {
                 <p className="text-sm font-semibold mb-2">Color Legend:</p>
                 <div className="p-4 border rounded bg-blue-300/10 border-blue-300 text-xs grid grid-cols-2 md:grid-cols-7 gap-3 dark:bg-gray-900">
                     {[
-                        { color: "bg-gray-500",            label: "IDLE",           textColor: "text-gray-500"             },
-                        { color: "bg-green-500",           label: "ONGOING",        textColor: "text-green-500"            },
-                        { color: "bg-orange-500",          label: "30 MIN WARNING", textColor: "text-orange-500"           },
-                        { color: "bg-red-500",             label: "UNLOADING",      textColor: "text-red-500"              },
-                        { color: "bg-purple-500",          label: "COOLDOWN",       textColor: "text-purple-500"           },
-                        { color: "bg-blue-500",            label: "SHUTDOWN",       textColor: "text-blue-500"             },
-                        { color: "bg-black dark:bg-white", label: "INTERRUPTED",    textColor: "text-gray-800 dark:text-white" },
+                        { color: "bg-gray-500", label: "IDLE", textColor: "text-gray-500" },
+                        { color: "bg-green-500", label: "ONGOING", textColor: "text-green-500" },
+                        { color: "bg-orange-500", label: "30 MIN WARNING", textColor: "text-orange-500" },
+                        { color: "bg-red-500", label: "UNLOADING", textColor: "text-red-500" },
+                        { color: "bg-purple-500", label: "COOLDOWN", textColor: "text-purple-500" },
+                        { color: "bg-blue-500", label: "SHUTDOWN", textColor: "text-blue-500" },
+                        { color: "bg-black dark:bg-white", label: "INTERRUPTED", textColor: "text-gray-800 dark:text-white" },
                     ].map(({ color, label, textColor }) => (
                         <div key={label} className={`flex items-center gap-2 font-semibold ${textColor}`}>
                             <span className={`w-3 h-3 ${color} rounded-sm`} />
@@ -447,10 +447,10 @@ export default function OvenList() {
             {/* OVEN GRID */}
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {ovenList.map((oven, i) => {
-                    const ovenName      = oven.machine_num;
+                    const ovenName = oven.machine_num;
                     const currentStatus = ovenStatus?.[ovenName]?.status || "idle";
-                    const actualTemp    = actualTemps[ovenName];
-                    const dropTimer     = dropTimers[ovenName];
+                    const actualTemp = actualTemps[ovenName];
+                    const dropTimer = dropTimers[ovenName];
 
                     const activeChambers = ovenDetails.filter(
                         (d) => d.oven === ovenName && d.status === "inuse"
@@ -459,10 +459,10 @@ export default function OvenList() {
                     const isTempDrop = actualTemp != null && targetTemp != null && actualTemp < targetTemp;
 
                     // All chambers of this oven
-                    const allChambers     = ovenDetails.filter((d) => d.oven === ovenName);
+                    const allChambers = ovenDetails.filter((d) => d.oven === ovenName);
                     // Pending = cooldown or unloading
                     const pendingChambers = allChambers.filter(isPendingChamber);
-                    const pendingCount    = pendingChambers.length;
+                    const pendingCount = pendingChambers.length;
 
                     return (
                         <div key={i} className={`p-4 border rounded-xl shadow ${getOvenCardColor(ovenName)}`}>
@@ -501,9 +501,9 @@ export default function OvenList() {
                             {allChambers.length > 0 && (
                                 <div className="flex flex-wrap gap-1 mb-2">
                                     {allChambers.map((ch, idx) => {
-                                        const end       = new Date(ch.end);
+                                        const end = new Date(ch.end);
                                         const remaining = Math.floor((end - now) / 1000);
-                                        const color     = getChamberColor(remaining, ch.status);
+                                        const color = getChamberColor(remaining, ch.status);
                                         // Simplified badge color for number pill
                                         const pillColor = ch.status === "interrupted"
                                             ? "bg-black text-white"
@@ -538,13 +538,13 @@ export default function OvenList() {
                             {pendingCount === 1 && (
                                 // Show inline if only 1 pending
                                 (() => {
-                                    const ch              = pendingChambers[0];
-                                    const end             = new Date(ch.end);
-                                    const remaining       = Math.floor((end - now) / 1000);
-                                    const cooldownEnd     = ch.cooldown_end ? new Date(ch.cooldown_end) : null;
-                                    const cooldownRem     = cooldownEnd ? Math.floor((cooldownEnd - now) / 1000) : null;
-                                    const isCoolingDown   = cooldownEnd && cooldownRem > 0;
-                                    const isCooldownDone  = cooldownEnd && cooldownRem <= 0;
+                                    const ch = pendingChambers[0];
+                                    const end = new Date(ch.end);
+                                    const remaining = Math.floor((end - now) / 1000);
+                                    const cooldownEnd = ch.cooldown_end ? new Date(ch.cooldown_end) : null;
+                                    const cooldownRem = cooldownEnd ? Math.floor((cooldownEnd - now) / 1000) : null;
+                                    const isCoolingDown = cooldownEnd && cooldownRem > 0;
+                                    const isCooldownDone = cooldownEnd && cooldownRem <= 0;
 
                                     return (
                                         <div className={`p-2 rounded border text-xs ${getChamberColor(remaining, ch.status)}`}>

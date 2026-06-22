@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { getTemperatures } from "./services/smartdac";
 
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/Components/ui/card";
+import { Badge } from "@/Components/ui/badge";
 
 const CHANNEL_NAMES = {
     "0001": "TBOVEN03",
@@ -244,11 +244,10 @@ export default function TemperatureDashboard() {
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                     <button
                         onClick={toggleSound}
-                        className={`flex items-center gap-1 text-xs px-2 py-1 rounded border transition ${
-                            soundEnabled
+                        className={`flex items-center gap-1 text-xs px-2 py-1 rounded border transition ${soundEnabled
                                 ? "border-green-500 text-green-600 bg-green-50"
                                 : "border-gray-300 text-gray-400"
-                        }`}
+                            }`}
                     >
                         {soundEnabled ? "🔔 Sound ON" : "🔕 Sound OFF"}
                     </button>
@@ -283,8 +282,8 @@ export default function TemperatureDashboard() {
                                 (state === "OFF"
                                     ? "outline"
                                     : state === "INVALID"
-                                      ? "destructive"
-                                      : "default");
+                                        ? "destructive"
+                                        : "default");
 
                             const tempColor =
                                 cfg?.tempColor ??
@@ -295,15 +294,13 @@ export default function TemperatureDashboard() {
                             return (
                                 <Card
                                     key={ch.channel}
-                                    className={`relative shadow-sm transition flex flex-col justify-between p-2 ${
-                                        isNoneAssign
+                                    className={`relative shadow-sm transition flex flex-col justify-between p-2 ${isNoneAssign
                                             ? "opacity-50"
                                             : "hover:shadow-md"
-                                    } ${cfg?.cardClass ?? ""} ${
-                                        state === "CRITICAL"
+                                        } ${cfg?.cardClass ?? ""} ${state === "CRITICAL"
                                             ? "animate-pulse"
                                             : ""
-                                    }`}
+                                        }`}
                                 >
                                     {/* Status dot / icon */}
                                     {cfg ? (
